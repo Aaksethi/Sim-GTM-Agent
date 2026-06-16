@@ -1,0 +1,284 @@
+// backend/server.js
+// ---------------------------------------------------------------------------
+// A small Express server with two jobs:
+//   1. GET  /health  -> quick "is it alive?" check
+//   2. POST /enrich  -> takes { domain }, asks the Anthropic API to enrich it
+//                       using Clay's MCP server, and returns clean JSON.
+//
+// The "intelligence" lives in the Anthropic API call. We attach Clay as an MCP
+// server, and Claude runs Clay's tool loop server-side, inside that one call.
+// We are NOT using the Anthropic SDK here — just Node's built-in fetch.
+// ---------------------------------------------------------------------------
+
+import express from "express";
+import cors from "cors";
+import "dotenv/config"; // loads variables from .env into process.env
+
+const app = express();
+
+// cors() lets a browser frontend on a different port/origin call this server.
+// FRONTEND_ORIGIN (e.g. your Netlify URL) restricts which site may call this
+// backend. Default "*" keeps local dev and an open public link working.
+const ALLOWED_ORIGIN = process.env.FRONTEND_ORIGIN || "*";
+app.use(cors({ origin: ALLOWED_ORIGIN }));
+// express.json() parses an incoming JSON request body into req.body.
+app.use(express.json());
+
+// Use the PORT from .env, or fall back to 3000.
+const PORT = process.env.PORT || 3000;
+
+// Brand + voice context for Sim. Used so that, for a good-fit account (ICP score
+// >= 70), the model also drafts an on-brand cold outreach email. This is a
+// compact version of the OS's positioning-icp + SOUL voice rules.
+const SIM_SYSTEM =
+  `You are a GTM analyst and copywriter for Sim (sim.ai) — an open-source AI ` +
+  `workspace where engineering teams build, deploy, and manage AI agents. Sim is ` +
+  `self-hostable (data stays on the customer's own infra), open source (auditable), ` +
+  `and SOC2-ready with SSO/SCIM. Best-fit buyers are compliance-driven healthcare ` +
+  `and fintech companies, ~200-5000 employees, US.\n\n` +
+  `SCORING RUBRIC — score each category with these exact point bands (max in parens). ` +
+  `For each category, give "points" (within its max) and a one-line "why" citing the ` +
+  `real signal you found:\n` +
+  `1. industry (max 20): healthcare/health-tech 20; fintech/financial services/insurtech 20; adjacent regulated 10; off-ICP (consumer/retail/media) 0.\n` +
+  `2. size (max 10): 200-5,000 employees 10; slightly outside (100-200 or 5K-7K) 5; far outside (<100 or >10K) 0.\n` +
+  `3. compliance (max 20): HIPAA or HITRUST 20; SOC2 Type II 15; SOC2 Type I 8; trust platform only (Vanta/Drata/SafeBase) 5; none 0.\n` +
+  `4. idp_sso (max 10): Okta or Azure AD/Entra 10; other IdP (OneLogin/Ping/JumpCloud) 5; none 0.\n` +
+  `5. ai_footprint (max 15): active AI hiring AND AI tooling/blog 15; one signal only 8; none 0.\n` +
+  `6. displacement (max 15): n8n/Zapier/Make in stack 15; LangChain/LangGraph only 10; none 0.\n` +
+  `7. compliance_hiring (max 10): active GRC/Security/AI-Governance hire 10; recently closed (<90d) 5; none 0.\n\n` +
+  `WHEN YOU WRITE THE OUTREACH EMAIL, follow these rules exactly:\n` +
+  `- Choose ONE angle: "self-host" (they handle regulated/PHI data), "displacement" ` +
+  `(they use n8n/Zapier/LangChain/Airflow), or "ai-governance" (hiring AI risk/GRC).\n` +
+  `- Subject: 5 words or fewer. No questions. No emojis.\n` +
+  `- Body: 4-6 sentences, exactly one ask. Line 1 must reference something specific ` +
+  `and real about THIS company. Mention compliance in at most one plain sentence.\n` +
+  `- Write peer-to-peer, engineer to engineer — not salesy.\n` +
+  `- Never use: leverage, empower, unlock, seamless, robust, cutting-edge, ` +
+  `"I hope this finds you well", "I wanted to reach out".`;
+
+// Category keys -> max points. Must match the rubric above AND the frontend's
+// CATEGORIES list. The 7 maxes sum to 100.
+const CATEGORY_MAX = {
+  industry: 20,
+  size: 10,
+  compliance: 20,
+  idp_sso: 10,
+  ai_footprint: 15,
+  displacement: 15,
+  compliance_hiring: 10,
+};
+
+// Turn the model's raw output into an authoritative result:
+//  - clamp each category's points to [0, max]; fill missing categories with 0
+//  - icpScore = the literal SUM of the categories (so the total always matches
+//    the visible matrix — this is the "show how we got the number" guarantee)
+//  - derive the tier from the OS thresholds
+//  - keep the drafted email only when the total qualifies (>= 70)
+function normalizeResult(parsed) {
+  const rawScores = (parsed && parsed.scores) || {};
+  const scores = {};
+  let total = 0;
+
+  for (const [key, max] of Object.entries(CATEGORY_MAX)) {
+    const entry = rawScores[key] || {};
+    let points = Number(entry.points);
+    if (!Number.isFinite(points)) points = 0;
+    points = Math.max(0, Math.min(max, Math.round(points)));
+    scores[key] = {
+      points,
+      max,
+      why: typeof entry.why === "string" ? entry.why : "",
+    };
+    total += points;
+  }
+
+  const tier =
+    total >= 85 ? "A" : total >= 70 ? "B" : total >= 50 ? "C" : "Disqualify";
+
+  const email =
+    total >= 70 && parsed && parsed.email && parsed.email.subject
+      ? parsed.email
+      : null;
+
+  return { company: (parsed && parsed.company) || "", scores, icpScore: total, tier, email };
+}
+
+// Pull a JSON object out of the model's text, even when it narrates first or
+// wraps the JSON in a ```json fence. Tries, in order: a fenced block, then the
+// first "{" to the last "}", then the whole string.
+function extractJson(text) {
+  const candidates = [];
+  const fence =
+    text.match(/```json\s*([\s\S]*?)```/i) || text.match(/```\s*([\s\S]*?)```/);
+  if (fence) candidates.push(fence[1]);
+  const first = text.indexOf("{");
+  const last = text.lastIndexOf("}");
+  if (first !== -1 && last > first) candidates.push(text.slice(first, last + 1));
+  candidates.push(text);
+  for (const c of candidates) {
+    try {
+      return JSON.parse(c.trim());
+    } catch {}
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Route 1: health check. Handy to confirm the server is up.
+// ---------------------------------------------------------------------------
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
+// ---------------------------------------------------------------------------
+// Helper: call the Anthropic API, automatically retrying on rate limits.
+// 429 = rate_limit_error, 529 = overloaded. Both are retryable. We honor the
+// API's "retry-after" header when present, otherwise back off exponentially.
+// ---------------------------------------------------------------------------
+async function callAnthropicWithRetry(requestBody, maxRetries = 4) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const apiResponse = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": process.env.ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01",
+          "anthropic-beta": "mcp-client-2025-11-20",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      // Not rate limited (or out of retries) — hand the response back as-is.
+      const retryable = apiResponse.status === 429 || apiResponse.status === 529;
+      if (!retryable || attempt === maxRetries) {
+        return apiResponse;
+      }
+
+      // Work out how long to wait: prefer the API's retry-after (seconds),
+      // capped at 30s; otherwise exponential backoff (2s, 4s, 8s, ...).
+      const retryAfter = Number(apiResponse.headers.get("retry-after"));
+      const waitMs =
+        Number.isFinite(retryAfter) && retryAfter > 0
+          ? Math.min(retryAfter * 1000, 30000)
+          : Math.min(2000 * 2 ** attempt, 30000);
+
+      console.warn(
+        `Rate limited (HTTP ${apiResponse.status}). Waiting ${waitMs}ms, then retry ${attempt + 1}/${maxRetries}...`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+    } catch (err) {
+      // A THROWN error means the request never completed — a network blip,
+      // socket reset, or a timeout on a slow enrichment. Retry it too (the old
+      // code only retried HTTP 429/529 and let thrown errors fail immediately).
+      if (attempt === maxRetries) throw err;
+      const waitMs = Math.min(2000 * 2 ** attempt, 30000);
+      console.warn(
+        `Network error calling Anthropic (${err?.message || err}). Retry ${attempt + 1}/${maxRetries} in ${waitMs}ms...`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Route 2: enrich a company domain.
+// ---------------------------------------------------------------------------
+app.post("/enrich", async (req, res) => {
+  // Pull "domain" out of the JSON body, e.g. { "domain": "stripe.com" }.
+  const { domain } = req.body || {};
+
+  // If the caller didn't send a domain, that's a bad request.
+  if (!domain) {
+    return res.status(400).json({ error: "Missing 'domain' in request body." });
+  }
+
+  // The instruction we send to Claude. We explicitly ask for ONLY a JSON
+  // object so the response is easy to parse on the way back.
+  const userMessage =
+    `Use the Clay tools to enrich the company at the domain "${domain}". ` +
+    `Then score it against the ICP using the 7-category rubric in your instructions. ` +
+    `If the total (sum of the 7 categories) is 70 or higher, ALSO write a short cold outreach email. ` +
+    `Reply with ONLY a JSON object in exactly this shape and nothing else:\n` +
+    `{\n` +
+    `  "company": string,\n` +
+    `  "scores": {\n` +
+    `    "industry":          { "points": number, "why": string },\n` +
+    `    "size":              { "points": number, "why": string },\n` +
+    `    "compliance":        { "points": number, "why": string },\n` +
+    `    "idp_sso":           { "points": number, "why": string },\n` +
+    `    "ai_footprint":      { "points": number, "why": string },\n` +
+    `    "displacement":      { "points": number, "why": string },\n` +
+    `    "compliance_hiring": { "points": number, "why": string }\n` +
+    `  },\n` +
+    `  "email": { "subject": string, "body": string, "angle": "self-host" | "displacement" | "ai-governance" }  // OR null if total < 70\n` +
+    `}`;
+
+  // The request body for the Anthropic Messages API.
+  const requestBody = {
+    model: "claude-sonnet-4-6",
+    max_tokens: 3500, // headroom for the 7-category breakdown + drafted email
+    system: SIM_SYSTEM,
+    messages: [{ role: "user", content: userMessage }],
+
+    // Declare the Clay MCP server Claude should connect to.
+    mcp_servers: [
+      {
+        type: "url",
+        url: "https://api.clay.com/v3/mcp",
+        name: "clay",
+        authorization_token: process.env.CLAY_MCP_TOKEN,
+      },
+    ],
+
+    // Enable Clay's tools. IMPORTANT: with the CURRENT MCP connector, tool
+    // configuration lives here in the separate "tools" array as an
+    // mcp_toolset object — NOT inside mcp_servers. (The old
+    // "tool_configuration" inside mcp_servers is deprecated.)
+    tools: [{ type: "mcp_toolset", mcp_server_name: "clay" }],
+  };
+
+  try {
+    // Call the Anthropic API (retries automatically on 429/529 rate limits).
+    const apiResponse = await callAnthropicWithRetry(requestBody);
+
+    // Turn the API's HTTP response into a JS object.
+    const data = await apiResponse.json();
+
+    // The API can return an { error: ... } object (bad key, bad request, etc.).
+    if (data.error) {
+      console.error("Anthropic API returned an error:", data.error);
+      return res.status(502).json({ error: data.error });
+    }
+
+    // The response "content" is an ARRAY of blocks (text, tool calls, etc.).
+    // We only want the text blocks. Join them into one string.
+    const textOutput = (data.content || [])
+      .filter((block) => block.type === "text")
+      .map((block) => block.text)
+      .join("");
+
+    // The model usually narrates during the MCP tool loop and wraps the final
+    // JSON in a ```json fence, so we EXTRACT the JSON object rather than trying
+    // to parse the whole blob. Then normalize (clamp + sum + tier).
+    const parsed = extractJson(textOutput);
+    if (parsed) {
+      return res.json(normalizeResult(parsed));
+    }
+
+    // Couldn't find JSON anywhere — hand back the raw text so you can debug it.
+    console.error("Could not parse model output as JSON. First 500 chars:", textOutput.slice(0, 500));
+    return res.status(200).json({ raw: textOutput });
+  } catch (networkError) {
+    // fetch() itself threw — network down, DNS issue, etc.
+    console.error("Network error calling the Anthropic API:", networkError);
+    return res.status(500).json({ error: "Failed to reach the Anthropic API." });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Start listening.
+// ---------------------------------------------------------------------------
+app.listen(PORT, () => {
+  console.log(`Backend running on http://localhost:${PORT}`);
+});

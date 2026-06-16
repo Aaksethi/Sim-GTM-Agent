@@ -1,0 +1,13 @@
+# Netlify build config for the frontend.
+# In the Netlify UI, set the site's "Base directory" to `frontend` so Netlify
+# reads this file and the paths below resolve inside the frontend folder.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Single-page app: send any path back to index.html so a hard refresh / deep
+# link doesn't 404. (Harmless even though this app has no client-side routing.)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

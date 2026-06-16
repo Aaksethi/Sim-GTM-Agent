@@ -1,0 +1,13 @@
+# Dependencies — Render/Netlify reinstall these, never commit them
+node_modules/
+
+# Secrets — your API keys live in the Render/Netlify dashboards, never in git
+.env
+.env.local
+.env.production
+
+# Build output
+dist/
+
+# Logs
+*.log
