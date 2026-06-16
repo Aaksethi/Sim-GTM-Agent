@@ -1,0 +1,44 @@
+[
+  {
+    "domain": "stripe.com",
+    "company": "Stripe",
+    "scores": {
+      "industry": { "points": 20, "max": 20, "why": "Core fintech / financial-services infrastructure — payments, revenue tooling, and financial APIs." },
+      "size": { "points": 0, "max": 10, "why": "~15,674 employees — far above the 5,000 ceiling for the ideal ICP." },
+      "compliance": { "points": 15, "max": 20, "why": "SOC 2, SOC 1, HIPAA, ISO/IEC 27001, NIST CSF; AuditBoard + ZenGRC in stack." },
+      "idp_sso": { "points": 10, "max": 10, "why": "Microsoft Entra ID (Azure AD) + OpenID Connect confirm enterprise IdP/SSO." },
+      "ai_footprint": { "points": 15, "max": 15, "why": "LangChain, LangGraph, Bedrock, SageMaker, Copilot in stack; open AML AI role." },
+      "displacement": { "points": 10, "max": 15, "why": "LangChain + LangGraph confirmed in stack — orchestration frameworks Sim targets." },
+      "compliance_hiring": { "points": 10, "max": 10, "why": "Open 'Global AML Lead, Risk Operations' role moving to AI-powered compliance." }
+    },
+    "icpScore": 80,
+    "tier": "B",
+    "email": {
+      "angle": "displacement",
+      "subject": "AI agents on your infra",
+      "body": "Saw that your AML team is hiring a lead specifically to move off legacy vendor tools toward AI-powered detection workflows — that's exactly the problem Sim was built for. Sim is an open-source agent workspace that lets your engineers build, deploy, and manage those workflows on your own infrastructure, so transaction data never leaves Stripe's environment. LangChain and LangGraph are already in your stack, so your team would be writing against familiar primitives with a UI and orchestration layer on top instead of raw framework code. SOC2-ready with SSO/SCIM out of the box, and the repo is public if you want to audit before any conversation. Worth a 20-minute call with whoever owns the AML tooling roadmap?"
+    },
+    "status": "Done"
+  },
+  {
+    "domain": "signzy.com",
+    "company": "Signzy",
+    "scores": {
+      "industry": { "points": 20, "max": 20, "why": "Fintech / RegTech infrastructure — digital onboarding and KYC/AML for banks." },
+      "size": { "points": 10, "max": 10, "why": "~201-500 employees — squarely in the ICP band." },
+      "compliance": { "points": 15, "max": 20, "why": "SOC 2 Type II + ISO 27001." },
+      "idp_sso": { "points": 10, "max": 10, "why": "Azure AD in the stack." },
+      "ai_footprint": { "points": 15, "max": 15, "why": "AI-RPA product line plus active AI engineering hiring." },
+      "displacement": { "points": 15, "max": 15, "why": "n8n referenced in a live job posting — direct displacement signal." },
+      "compliance_hiring": { "points": 0, "max": 10, "why": "No active GRC / compliance hire found." }
+    },
+    "icpScore": 85,
+    "tier": "A",
+    "email": {
+      "angle": "displacement",
+      "subject": "n8n to agent infra",
+      "body": "Noticed a recent Signzy posting that lists n8n on the stack — once those automations start touching KYC and onboarding data, the self-hosted question usually comes up fast. Sim is an open-source agent workspace your team can run on your own infrastructure, so customer and verification data never leaves your environment. It covers the same build-deploy-manage loop as n8n but is purpose-built for AI agents, with SSO/SCIM and SOC2-readiness in place. The repo is public if your engineers want to look before any call. Worth 20 minutes with whoever owns the automation stack?"
+    },
+    "status": "Done"
+  }
+]

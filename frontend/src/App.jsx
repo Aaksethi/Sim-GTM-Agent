@@ -1,144 +1,131 @@
 import { useState } from 'react'
 import axios from 'axios'
-import UploadZone from './components/UploadZone'
 import RunButton from './components/RunButton'
 import ProgressBar from './components/ProgressBar'
 import ResultsTable from './components/ResultsTable'
 import DownloadButton from './components/DownloadButton'
+import accounts from './data/accounts.json'
 
-// Where the backend lives. Each domain is POSTed here one at a time.
-// In production (Netlify) set VITE_BACKEND_URL to the deployed backend URL
-// (e.g. https://your-backend.onrender.com). Locally it falls back to localhost.
+// Backend endpoint. In production (Netlify) VITE_BACKEND_URL points at the
+// deployed Render backend; locally it falls back to localhost.
 const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 const BACKEND_URL = `${API_BASE}/enrich`
 
-// Pause between domains so we don't fire two token-heavy MCP calls in the same
-// minute and trip the Anthropic input-tokens-per-minute rate limit.
-// - On a low (Tier 1) account, set this to ~60000 (60s) for zero 429s.
-// - After raising your usage tier, drop it to 0–2000 for a faster demo.
-// The backend also retries automatically on 429, so this is the smoother,
-// not the only, line of defense.
+// Pacing between domains on a full re-run, to stay under the Anthropic
+// input-tokens-per-minute limit (~60s = one domain/min on a Tier 1 account).
 const DELAY_BETWEEN_DOMAINS_MS = 60000
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+// Enrich one domain via the backend and return a normalized row. Never throws —
+// a failure comes back as a row with status 'Failed' so the table keeps going.
+async function enrichOne(domain) {
+  try {
+    const { data } = await axios.post(BACKEND_URL, { domain })
+    if (data && (data.company !== undefined || data.icpScore !== undefined)) {
+      return {
+        domain,
+        company: data.company ?? domain,
+        scores: data.scores ?? null,
+        icpScore: typeof data.icpScore === 'number' ? data.icpScore : null,
+        tier: data.tier ?? null,
+        email: data.email && data.email.subject ? data.email : null,
+        error: null,
+        status: 'Done',
+      }
+    }
+    const detail = data?.raw
+      ? String(data.raw)
+      : data?.error
+        ? (typeof data.error === 'string' ? data.error : JSON.stringify(data.error))
+        : 'No usable data returned'
+    return { domain, company: domain, scores: null, icpScore: null, tier: null, email: null, error: detail, status: 'Failed' }
+  } catch (err) {
+    const detail = err?.response?.data?.error
+      ? (typeof err.response.data.error === 'string' ? err.response.data.error : JSON.stringify(err.response.data.error))
+      : err?.message || 'Request failed'
+    return { domain, company: domain, scores: null, icpScore: null, tier: null, email: null, error: detail, status: 'Failed' }
+  }
+}
 
 export default function App() {
-  // ----- All app state lives here -----
-  const [domains, setDomains] = useState([])     // domains parsed from the CSV
-  const [results, setResults] = useState([])     // enriched rows, filled one by one
-  const [isLoading, setIsLoading] = useState(false)
-  const [progress, setProgress] = useState('')   // e.g. "Processing 3 of 10 domains..."
-  const [error, setError] = useState(null)
+  // The accounts load instantly from the bundled, pre-scored dataset.
+  const [results, setResults] = useState(accounts)
+  const [runningRows, setRunningRows] = useState(() => new Set()) // per-row re-runs in flight
+  const [runningAll, setRunningAll] = useState(false)
+  const [completed, setCompleted] = useState(0)
+  const [progress, setProgress] = useState('')
 
-  // Called by UploadZone once it has parsed the file.
-  function handleDomainsReady(list) {
-    setDomains(list)
-    setResults([])
-    setProgress('')
-    setError(null)
+  const busy = runningAll || runningRows.size > 0
+
+  // Re-score a single account — the quick "refresh just this one" (~1 min).
+  async function rerunRow(domain) {
+    if (runningAll || runningRows.has(domain)) return
+    setRunningRows((prev) => new Set(prev).add(domain))
+    const row = await enrichOne(domain)
+    setResults((prev) => prev.map((r) => (r.domain === domain ? row : r)))
+    setRunningRows((prev) => {
+      const next = new Set(prev)
+      next.delete(domain)
+      return next
+    })
   }
 
-  // The pipeline: walk the domains SEQUENTIALLY so the table fills row by row.
-  async function runPipeline() {
-    if (domains.length === 0 || isLoading) return
-    setIsLoading(true)
-    setResults([])
-    setError(null)
+  // Re-score every account live. Slow + spends credits, so it's behind a confirm.
+  async function rerunAll() {
+    if (busy) return
+    const mins = Math.max(1, Math.round((results.length * DELAY_BETWEEN_DOMAINS_MS) / 60000))
+    const ok = window.confirm(
+      `Re-run all ${results.length} accounts live?\n\nThis re-scores every account from scratch — about ${mins} minute(s) — and uses the owner's API credits. The pre-loaded results stay on screen until each one finishes.`,
+    )
+    if (!ok) return
 
-    const total = domains.length
-
-    for (let i = 0; i < total; i++) {
-      const domain = domains[i]
-      setProgress(`Processing ${i + 1} of ${total} domains...`)
-
-      let row
-      try {
-        const { data } = await axios.post(BACKEND_URL, { domain })
-
-        // Happy path: backend returned { company, icpScore, signal }.
-        if (data && (data.company !== undefined || data.icpScore !== undefined)) {
-          row = {
-            domain,
-            company: data.company ?? domain,
-            // Per-category breakdown { points, max, why } for the 7 categories.
-            scores: data.scores ?? null,
-            icpScore: typeof data.icpScore === 'number' ? data.icpScore : null,
-            tier: data.tier ?? null,
-            // Present only for good-fit accounts (score >= 70); null otherwise.
-            email: data.email && data.email.subject ? data.email : null,
-            error: null,
-            status: 'Done',
-          }
-        } else {
-          // Backend responded but without clean JSON (e.g. { raw } or { error }).
-          const detail = data?.raw
-            ? String(data.raw)
-            : data?.error
-              ? (typeof data.error === 'string' ? data.error : JSON.stringify(data.error))
-              : 'No usable data returned'
-          row = { domain, company: domain, scores: null, icpScore: null, tier: null, email: null, error: detail, status: 'Failed' }
-        }
-      } catch (err) {
-        // Network error, 4xx/5xx, etc. Mark this one Failed and keep going.
-        const detail = err?.response?.data?.error
-          ? (typeof err.response.data.error === 'string' ? err.response.data.error : JSON.stringify(err.response.data.error))
-          : err?.message || 'Request failed'
-        row = { domain, company: domain, scores: null, icpScore: null, tier: null, email: null, error: detail, status: 'Failed' }
-      }
-
-      // Append this row — React paints it before the next request starts.
-      setResults((prev) => [...prev, row])
-
-      // Pace the next request (skip the wait after the final domain).
-      if (i < total - 1 && DELAY_BETWEEN_DOMAINS_MS > 0) {
-        setProgress(
-          `Pacing ${DELAY_BETWEEN_DOMAINS_MS / 1000}s to respect rate limits — ${i + 1} of ${total} done...`,
-        )
+    setRunningAll(true)
+    setCompleted(0)
+    const domains = results.map((r) => r.domain)
+    for (let i = 0; i < domains.length; i++) {
+      setProgress(`Re-running ${i + 1} of ${domains.length} — ${domains[i]}…`)
+      const row = await enrichOne(domains[i])
+      setResults((prev) => prev.map((r) => (r.domain === domains[i] ? row : r)))
+      setCompleted(i + 1)
+      if (i < domains.length - 1) {
+        setProgress(`Pacing 60s to respect rate limits — ${i + 1} of ${domains.length} done…`)
         await sleep(DELAY_BETWEEN_DOMAINS_MS)
       }
     }
-
-    setIsLoading(false)
+    setRunningAll(false)
     setProgress('')
   }
+
+  // Header summary, computed from whatever is currently on screen.
+  const scored = results.filter((r) => typeof r.icpScore === 'number')
+  const tierA = results.filter((r) => r.tier === 'A').length
+  const avg = scored.length ? Math.round(scored.reduce((s, r) => s + r.icpScore, 0) / scored.length) : 0
 
   return (
     <div style={styles.page}>
       <div style={styles.container}>
         <header style={styles.header}>
           <div>
-            <h1 style={styles.title}>
-              <span style={{ color: 'var(--accent)' }}>◆</span> Sim GTM — Command Center
-            </h1>
+            <h1 style={styles.title}>Sim GTM — ICP Accounts</h1>
             <p style={styles.subtitle}>
-              Upload domains. Enrich via Clay. Score against the ICP. Ship outreach-ready accounts.
+              {results.length} accounts scored · {tierA} Tier A · avg {avg}/100
             </p>
           </div>
-          <DownloadButton results={results} />
+          <div style={styles.actions}>
+            <DownloadButton results={results} />
+            <RunButton onClick={rerunAll} disabled={busy} isLoading={runningAll} />
+          </div>
         </header>
 
-        <UploadZone onDomainsReady={handleDomainsReady} />
-
-        <div style={styles.controls}>
-          <RunButton
-            onClick={runPipeline}
-            disabled={domains.length === 0 || isLoading}
-            isLoading={isLoading}
-          />
-          {domains.length > 0 && !isLoading && (
-            <span style={styles.muted}>
-              {domains.length} domain{domains.length === 1 ? '' : 's'} loaded
-            </span>
-          )}
-        </div>
-
-        {isLoading && (
-          <ProgressBar progress={progress} completed={results.length} total={domains.length} />
+        {runningAll && (
+          <ProgressBar progress={progress} completed={completed} total={results.length} />
         )}
 
-        {error && <div style={styles.error}>{error}</div>}
+        <ResultsTable results={results} onRerun={rerunRow} runningRows={runningRows} />
 
-        <ResultsTable results={results} />
+        <p style={styles.foot}>
+          Pre-scored against Sim's ICP. Click any row for the full breakdown and draft email · use ↻ to re-score one account live.
+        </p>
       </div>
     </div>
   )
@@ -146,25 +133,16 @@ export default function App() {
 
 const styles = {
   page: { minHeight: '100%', padding: '40px 20px' },
-  container: { maxWidth: 980, margin: '0 auto' },
+  container: { maxWidth: 1040, margin: '0 auto' },
   header: {
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     gap: 16,
-    marginBottom: 22,
+    marginBottom: 18,
   },
-  title: { margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: -0.2 },
+  title: { margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: -0.3 },
   subtitle: { margin: '6px 0 0', color: 'var(--muted)', fontSize: 14 },
-  controls: { display: 'flex', alignItems: 'center', gap: 14, marginTop: 18 },
-  muted: { color: 'var(--muted)', fontSize: 14 },
-  error: {
-    marginTop: 16,
-    padding: '12px 14px',
-    borderRadius: 9,
-    background: 'rgba(239,68,68,0.12)',
-    border: '1px solid rgba(239,68,68,0.4)',
-    color: '#fca5a5',
-    fontSize: 14,
-  },
+  actions: { display: 'flex', alignItems: 'center', gap: 10 },
+  foot: { color: 'var(--muted)', fontSize: 12.5, marginTop: 14, textAlign: 'center' },
 }

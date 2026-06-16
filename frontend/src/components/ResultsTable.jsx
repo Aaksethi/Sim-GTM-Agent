@@ -12,32 +12,42 @@ const CATEGORIES = [
   { key: 'compliance_hiring', short: 'Hiring', label: 'Compliance hiring', max: 10 },
 ]
 
+// Semantic colors tuned to read on a white background.
+const GREEN = '#16a34a'
+const AMBER = '#d97706'
+const RED = '#dc2626'
+
 // Color a category value by how full it is (points / max).
 function cellColor(points, max) {
   if (!max) return 'var(--muted)'
   const frac = points / max
-  if (frac >= 0.66) return '#22c55e' // green
-  if (frac >= 0.33) return '#f59e0b' // amber
-  if (frac > 0) return '#ef4444' // red
+  if (frac >= 0.66) return GREEN
+  if (frac >= 0.33) return AMBER
+  if (frac > 0) return RED
   return 'var(--muted)' // 0 / unknown
 }
 
 // Total -> badge colors + tier (OS thresholds: A 85+, B 70+, C 50+, else DQ).
 function tierBadge(score, tier) {
   if (score === null || score === undefined || Number.isNaN(score)) {
-    return { score: '—', tier: '', fg: '#999', bg: '#2a2a2a' }
+    return { score: '—', tier: '', fg: 'var(--muted)', bg: 'var(--panel-2)' }
   }
-  if (score >= 85) return { score, tier: tier || 'A', fg: '#22c55e', bg: 'rgba(34,197,94,0.14)' }
-  if (score >= 70) return { score, tier: tier || 'B', fg: '#f59e0b', bg: 'rgba(245,158,11,0.14)' }
-  if (score >= 50) return { score, tier: tier || 'C', fg: '#ef4444', bg: 'rgba(239,68,68,0.14)' }
-  return { score, tier: tier || 'DQ', fg: '#ef4444', bg: 'rgba(239,68,68,0.10)' }
+  if (score >= 85) return { score, tier: tier || 'A', fg: GREEN, bg: 'rgba(22,163,74,0.12)' }
+  if (score >= 70) return { score, tier: tier || 'B', fg: AMBER, bg: 'rgba(217,119,6,0.12)' }
+  if (score >= 50) return { score, tier: tier || 'C', fg: RED, bg: 'rgba(220,38,38,0.10)' }
+  return { score, tier: tier || 'DQ', fg: RED, bg: 'rgba(220,38,38,0.08)' }
+}
+
+function statusColor(status) {
+  if (status === 'Done') return GREEN
+  if (status === 'Failed') return RED
+  return '#9ca3af' // pending / unknown
 }
 
 // One table row + its expandable detail row (breakdown + email).
-function Row({ r }) {
+function Row({ r, onRerun, running }) {
   const [open, setOpen] = useState(false)
   const badge = tierBadge(r.icpScore, r.tier)
-  const statusColor = r.status === 'Done' ? '#22c55e' : '#ef4444'
   const hasScores = !!r.scores
   const hasEmail = !!(r.email && r.email.subject)
   const canExpand = hasScores || hasEmail || !!r.error
@@ -50,9 +60,9 @@ function Row({ r }) {
   return (
     <>
       <tr
+        className="datarow"
         onClick={() => canExpand && setOpen((v) => !v)}
         style={{
-          animation: 'fadeInRow 0.25s ease',
           borderBottom: open ? 'none' : '1px solid var(--border)',
           cursor: canExpand ? 'pointer' : 'default',
         }}
@@ -97,10 +107,20 @@ function Row({ r }) {
           )}
         </td>
         <td style={td}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, color: statusColor, fontWeight: 600 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: statusColor }} />
-            {r.status}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, color: statusColor(r.status), fontWeight: 600 }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: statusColor(r.status) }} />
+              {r.status}
+            </span>
+            <button
+              title="Re-score this account live"
+              onClick={(e) => { e.stopPropagation(); onRerun && onRerun(r.domain) }}
+              disabled={running}
+              style={{ ...rerunBtn, cursor: running ? 'default' : 'pointer' }}
+            >
+              {running ? <span style={miniSpinner} /> : '↻'}
+            </button>
+          </div>
         </td>
       </tr>
 
@@ -150,10 +170,10 @@ function Row({ r }) {
   )
 }
 
-// The table. Empty state when nothing has been run yet.
-export default function ResultsTable({ results }) {
+// The table. Empty state when there are no accounts at all.
+export default function ResultsTable({ results, onRerun, runningRows }) {
   if (!results || results.length === 0) {
-    return <div style={empty}>Upload a CSV to get started</div>
+    return <div style={empty}>No accounts loaded yet.</div>
   }
 
   return (
@@ -165,7 +185,7 @@ export default function ResultsTable({ results }) {
             {CATEGORIES.map((c) => (
               <th key={c.key} style={thNum} title={`${c.label} (max ${c.max})`}>
                 {c.short}
-                <span style={{ display: 'block', fontSize: 10, color: '#666', fontWeight: 400 }}>/{c.max}</span>
+                <span style={{ display: 'block', fontSize: 10, color: 'var(--muted)', fontWeight: 400 }}>/{c.max}</span>
               </th>
             ))}
             <th style={thNum}>Total</th>
@@ -175,7 +195,7 @@ export default function ResultsTable({ results }) {
         </thead>
         <tbody>
           {results.map((r, i) => (
-            <Row key={`${r.domain}-${i}`} r={r} />
+            <Row key={`${r.domain}-${i}`} r={r} onRerun={onRerun} running={runningRows?.has(r.domain)} />
           ))}
         </tbody>
       </table>
@@ -184,18 +204,19 @@ export default function ResultsTable({ results }) {
 }
 
 const wrap = {
-  marginTop: 20,
+  marginTop: 4,
   border: '1px solid var(--border)',
   borderRadius: 12,
-  overflowX: 'auto', // ~11 columns now — scroll sideways on narrow screens
+  overflowX: 'auto', // ~11 columns — scroll sideways on narrow screens
   background: 'var(--panel)',
+  boxShadow: '0 1px 2px rgba(16,24,40,0.04), 0 1px 3px rgba(16,24,40,0.06)',
 }
-const table = { width: '100%', borderCollapse: 'collapse', fontSize: 14, minWidth: 880 }
+const table = { width: '100%', borderCollapse: 'collapse', fontSize: 14, minWidth: 900 }
 const th = {
   textAlign: 'left',
   padding: '11px 14px',
   color: 'var(--muted)',
-  fontSize: 12,
+  fontSize: 11.5,
   textTransform: 'uppercase',
   letterSpacing: 0.6,
   borderBottom: '1px solid var(--border)',
@@ -203,7 +224,7 @@ const th = {
   whiteSpace: 'nowrap',
 }
 const thNum = { ...th, textAlign: 'center' }
-const td = { padding: '12px 14px', verticalAlign: 'top', whiteSpace: 'nowrap' }
+const td = { padding: '12px 14px', verticalAlign: 'top', whiteSpace: 'nowrap', color: 'var(--text)' }
 const tdNum = { ...td, textAlign: 'center' }
 const pill = { display: 'inline-block', padding: '4px 10px', borderRadius: 99, fontWeight: 700, fontSize: 13 }
 const tierPill = {
@@ -223,6 +244,29 @@ const empty = {
   borderRadius: 12,
   background: 'var(--panel)',
 }
+const rerunBtn = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: 26,
+  height: 26,
+  borderRadius: 7,
+  border: '1px solid var(--border)',
+  background: '#fff',
+  color: 'var(--accent)',
+  fontSize: 14,
+  lineHeight: 1,
+  padding: 0,
+}
+const miniSpinner = {
+  width: 12,
+  height: 12,
+  border: '2px solid rgba(79,70,229,0.3)',
+  borderTopColor: 'var(--accent)',
+  borderRadius: '50%',
+  animation: 'spin 0.7s linear infinite',
+  display: 'inline-block',
+}
 const detailCell = { padding: '14px 16px 18px', background: 'var(--panel-2)', whiteSpace: 'normal' }
 const detailTitle = {
   color: 'var(--muted)',
@@ -232,9 +276,9 @@ const detailTitle = {
   marginBottom: 10,
 }
 const errorBox = {
-  color: '#fca5a5',
-  background: 'rgba(239,68,68,0.10)',
-  border: '1px solid rgba(239,68,68,0.35)',
+  color: '#b91c1c',
+  background: 'rgba(220,38,38,0.08)',
+  border: '1px solid rgba(220,38,38,0.30)',
   borderRadius: 8,
   padding: '10px 12px',
   fontSize: 13,
@@ -242,14 +286,14 @@ const errorBox = {
   whiteSpace: 'pre-wrap',
 }
 const breakdownRow = { display: 'flex', alignItems: 'center', gap: 12, padding: '4px 0' }
-const barTrack = { width: 120, height: 7, background: 'var(--bg)', borderRadius: 99, overflow: 'hidden' }
+const barTrack = { width: 120, height: 7, background: '#e5e7eb', borderRadius: 99, overflow: 'hidden' }
 const barFill = { height: '100%', borderRadius: 99 }
 const emailHeader = { display: 'flex', alignItems: 'center', gap: 12, padding: '4px 0 10px' }
 const anglePill = {
   display: 'inline-block',
   padding: '3px 10px',
   borderRadius: 99,
-  background: 'rgba(245,158,11,0.14)',
+  background: 'rgba(79,70,229,0.10)',
   color: 'var(--accent)',
   fontSize: 12,
   fontWeight: 700,
@@ -258,7 +302,7 @@ const anglePill = {
 const copyBtn = {
   marginLeft: 'auto',
   background: 'var(--accent)',
-  color: '#0f0f0f',
+  color: '#fff',
   border: 'none',
   borderRadius: 7,
   padding: '5px 13px',

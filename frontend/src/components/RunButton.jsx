@@ -1,5 +1,5 @@
-// RunButton: kicks off the pipeline. Disabled when there's nothing to run or a
-// run is already in progress; shows a spinner while loading.
+// RunButton: triggers a full live re-run of every account. Secondary / outline
+// style, since the pre-loaded results are the default. Spinner while running.
 export default function RunButton({ onClick, disabled, isLoading }) {
   return (
     <button
@@ -7,17 +7,17 @@ export default function RunButton({ onClick, disabled, isLoading }) {
       disabled={disabled}
       style={{
         ...btn,
-        opacity: disabled ? 0.5 : 1,
+        opacity: disabled && !isLoading ? 0.5 : 1,
         cursor: disabled ? 'not-allowed' : 'pointer',
       }}
     >
       {isLoading ? (
         <>
           <span style={spinner} />
-          Running…
+          Re-running…
         </>
       ) : (
-        'Run GTM Pipeline'
+        '↻ Re-run all'
       )}
     </button>
   )
@@ -26,22 +26,22 @@ export default function RunButton({ onClick, disabled, isLoading }) {
 const btn = {
   display: 'inline-flex',
   alignItems: 'center',
-  gap: 10,
-  background: 'var(--accent)',
-  color: '#0f0f0f',
-  border: 'none',
+  gap: 9,
+  background: '#fff',
+  color: 'var(--accent)',
+  border: '1px solid var(--accent)',
   borderRadius: 9,
-  padding: '11px 20px',
-  fontSize: 15,
-  fontWeight: 700,
+  padding: '9px 16px',
+  fontSize: 14,
+  fontWeight: 600,
   letterSpacing: 0.2,
 }
 
 const spinner = {
-  width: 15,
-  height: 15,
-  border: '2px solid rgba(15,15,15,0.35)',
-  borderTopColor: '#0f0f0f',
+  width: 14,
+  height: 14,
+  border: '2px solid rgba(79,70,229,0.3)',
+  borderTopColor: 'var(--accent)',
   borderRadius: '50%',
   animation: 'spin 0.7s linear infinite',
   display: 'inline-block',
