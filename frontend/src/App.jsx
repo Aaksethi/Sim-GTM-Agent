@@ -153,18 +153,15 @@ export default function App() {
                 <img
                   src="/sim-logo.png"
                   alt="Sim"
-                  height={32}
+                  height={38}
                   style={{ width: 'auto', display: 'block' }}
                   onError={() => setLogoError(true)}
                 />
               )}
             </div>
             <div>
-              <div style={styles.brandLine1}>
-                <span style={styles.brandName}>sim</span>
-                <span style={styles.divider} />
-                <span style={styles.brandTagline}>Open-source AI workspace for teams building enterprise agents</span>
-              </div>
+              <div style={styles.brandName}>sim</div>
+              <div style={styles.brandTagline}>Open-source AI workspace for teams building enterprise agents</div>
               <div style={styles.brandTrust}>Trusted by 100,000+ developers · SOC2 compliant · 1,000+ integrations</div>
               <div style={styles.amberRule} />
               <div style={styles.contextLine}>Enterprise accounts scored against Sim's ICP · Healthcare &amp; Fintech · run today</div>
@@ -249,30 +246,28 @@ const styles = {
     marginBottom: 18,
     flexWrap: 'wrap',
   },
-  brand: { display: 'flex', alignItems: 'flex-start', gap: 14 },
+  brand: { display: 'flex', alignItems: 'flex-start', gap: 16 },
   logoBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 8,
+    width: 56,
+    height: 56,
+    borderRadius: 12,
     background: '#111111',
-    padding: 6,
+    padding: 9,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
   },
   logoFallback: {
-    color: '#f59e0b',
+    color: '#10b981',
     fontWeight: 800,
-    fontSize: 20,
+    fontSize: 24,
     lineHeight: 1,
   },
-  brandLine1: { display: 'flex', alignItems: 'center', gap: 8, lineHeight: 1 },
-  brandName: { fontSize: 18, fontWeight: 500, color: 'var(--text)', lineHeight: 1 },
-  divider: { width: 1, height: 14, background: 'var(--border)', display: 'inline-block', flexShrink: 0 },
-  brandTagline: { fontSize: 12, color: 'var(--muted)', lineHeight: 1 },
-  brandTrust: { fontSize: 11, color: 'var(--muted)', marginTop: 5 },
-  amberRule: { width: 32, height: 2, background: '#f59e0b', borderRadius: 99, margin: '8px 0 4px' },
+  brandName: { fontSize: 22, fontWeight: 700, color: '#111', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 5 },
+  brandTagline: { fontSize: 13, color: '#555', lineHeight: 1.4, marginBottom: 2 },
+  brandTrust: { fontSize: 12, color: 'var(--muted)', lineHeight: 1.4 },
+  amberRule: { width: 32, height: 2, background: '#f59e0b', borderRadius: 99, margin: '9px 0 5px' },
   contextLine: { fontSize: 12, color: 'var(--muted)' },
 
   /* Header pills */
