@@ -22,16 +22,20 @@ body {
   color: var(--text);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  font-feature-settings: "cv11", "ss01";
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fadeInRow { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-/* Row hover: subtle lift + left amber accent. */
-.datarow:hover { background: var(--hover); }
-.datarow:hover td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+/* Row hover: left amber accent + very subtle lift. */
+.datarow:hover { background: #faf9f6; }
+.datarow:hover td:first-child { box-shadow: inset 2px 0 0 var(--accent); }
+.datarow { transition: background 0.1s; border-bottom: 1px solid rgba(0,0,0,0.05); }
 
 .tnum { font-variant-numeric: tabular-nums; }
 .label {
