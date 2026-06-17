@@ -1,5 +1,5 @@
-// RunButton: triggers a full live re-run of every account. Secondary / outline
-// style, since the pre-loaded results are the default. Spinner while running.
+// RunButton: runs the whole pipeline (scores every loaded account live, in order).
+// Solid amber — the primary action. Spinner + "Scoring…" while running.
 export default function RunButton({ onClick, disabled, isLoading }) {
   return (
     <button
@@ -14,10 +14,10 @@ export default function RunButton({ onClick, disabled, isLoading }) {
       {isLoading ? (
         <>
           <span style={spinner} />
-          Re-running…
+          Scoring…
         </>
       ) : (
-        '↻ Re-run all'
+        '▶  Run pipeline'
       )}
     </button>
   )
@@ -26,22 +26,24 @@ export default function RunButton({ onClick, disabled, isLoading }) {
 const btn = {
   display: 'inline-flex',
   alignItems: 'center',
-  gap: 9,
-  background: '#fff',
-  color: 'var(--accent)',
-  border: '1px solid var(--accent)',
+  gap: 8,
+  background: 'var(--accent)',
+  color: '#1a1a1a',
+  border: 'none',
   borderRadius: 9,
-  padding: '9px 16px',
+  padding: '9px 18px',
   fontSize: 14,
-  fontWeight: 600,
-  letterSpacing: 0.2,
+  fontWeight: 700,
+  letterSpacing: 0.1,
+  boxShadow: '0 1px 3px rgba(245,158,11,0.4)',
+  fontFamily: 'inherit',
 }
 
 const spinner = {
   width: 14,
   height: 14,
-  border: '2px solid rgba(79,70,229,0.3)',
-  borderTopColor: 'var(--accent)',
+  border: '2px solid rgba(26,26,26,0.3)',
+  borderTopColor: '#1a1a1a',
   borderRadius: '50%',
   animation: 'spin 0.7s linear infinite',
   display: 'inline-block',

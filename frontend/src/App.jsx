@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
 import RunButton from './components/RunButton'
-import ProgressBar from './components/ProgressBar'
 import ResultsTable from './components/ResultsTable'
 import DownloadButton from './components/DownloadButton'
 import accounts from './data/accounts.json'
@@ -11,13 +10,13 @@ import accounts from './data/accounts.json'
 const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 const BACKEND_URL = `${API_BASE}/enrich`
 
-// Pacing between domains on a full re-run, to stay under the Anthropic
-// input-tokens-per-minute limit (~60s = one domain/min on a Tier 1 account).
-const DELAY_BETWEEN_DOMAINS_MS = 60000
+// Pacing between domains on a run, to stay under the Anthropic
+// input-tokens-per-minute limit on a Tier 1 account.
+const DELAY_BETWEEN_DOMAINS_MS = 45000
+const EST_SECONDS_PER = 75 // rough wall-clock per domain (enrich + pacing) for the ETA
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
-// Enrich one domain via the backend and return a normalized row. Never throws —
-// a failure comes back as a row with status 'Failed' so the table keeps going.
+// Enrich one domain via the backend and return a normalized row. Never throws.
 async function enrichOne(domain) {
   try {
     const { data } = await axios.post(BACKEND_URL, { domain })
@@ -48,83 +47,96 @@ async function enrichOne(domain) {
 }
 
 export default function App() {
-  // The accounts load instantly from the bundled, pre-scored dataset.
+  // The 36 accounts load instantly from the bundled list (status "pending").
   const [results, setResults] = useState(accounts)
-  const [runningRows, setRunningRows] = useState(() => new Set()) // per-row re-runs in flight
-  const [runningAll, setRunningAll] = useState(false)
+  const [running, setRunning] = useState(false)          // full pipeline run
+  const [runningRows, setRunningRows] = useState(() => new Set()) // per-row re-runs
+  const [currentDomain, setCurrentDomain] = useState(null)       // row being scored now
   const [completed, setCompleted] = useState(0)
-  const [progress, setProgress] = useState('')
 
-  const busy = runningAll || runningRows.size > 0
+  const total = results.length
+  const tierA = results.filter((r) => r.tier === 'A').length
+  const scored = results.filter((r) => typeof r.icpScore === 'number')
+  const avg = scored.length ? Math.round(scored.reduce((s, r) => s + r.icpScore, 0) / scored.length) : 0
+  const busy = running || runningRows.size > 0
 
-  // Re-score a single account — the quick "refresh just this one" (~1 min).
+  // Re-score a single account (the quick "refresh just this one").
   async function rerunRow(domain) {
-    if (runningAll || runningRows.has(domain)) return
-    setRunningRows((prev) => new Set(prev).add(domain))
+    if (running || runningRows.has(domain)) return
+    setRunningRows((p) => new Set(p).add(domain))
     const row = await enrichOne(domain)
-    setResults((prev) => prev.map((r) => (r.domain === domain ? row : r)))
-    setRunningRows((prev) => {
-      const next = new Set(prev)
-      next.delete(domain)
-      return next
+    setResults((p) => p.map((r) => (r.domain === domain ? row : r)))
+    setRunningRows((p) => {
+      const n = new Set(p)
+      n.delete(domain)
+      return n
     })
   }
 
-  // Re-score every account live. Slow + spends credits, so it's behind a confirm.
-  async function rerunAll() {
+  // Run the whole pipeline: score every account live, in order, filling the table.
+  async function runPipeline() {
     if (busy) return
-    const mins = Math.max(1, Math.round((results.length * DELAY_BETWEEN_DOMAINS_MS) / 60000))
-    const ok = window.confirm(
-      `Re-run all ${results.length} accounts live?\n\nThis re-scores every account from scratch — about ${mins} minute(s) — and uses the owner's API credits. The pre-loaded results stay on screen until each one finishes.`,
-    )
-    if (!ok) return
-
-    setRunningAll(true)
+    setRunning(true)
     setCompleted(0)
     const domains = results.map((r) => r.domain)
     for (let i = 0; i < domains.length; i++) {
-      setProgress(`Re-running ${i + 1} of ${domains.length} — ${domains[i]}…`)
+      setCurrentDomain(domains[i])
       const row = await enrichOne(domains[i])
-      setResults((prev) => prev.map((r) => (r.domain === domains[i] ? row : r)))
+      setResults((p) => p.map((r) => (r.domain === domains[i] ? row : r)))
       setCompleted(i + 1)
-      if (i < domains.length - 1) {
-        setProgress(`Pacing 60s to respect rate limits — ${i + 1} of ${domains.length} done…`)
-        await sleep(DELAY_BETWEEN_DOMAINS_MS)
-      }
+      if (i < domains.length - 1) await sleep(DELAY_BETWEEN_DOMAINS_MS)
     }
-    setRunningAll(false)
-    setProgress('')
+    setCurrentDomain(null)
+    setRunning(false)
   }
 
-  // Header summary, computed from whatever is currently on screen.
-  const scored = results.filter((r) => typeof r.icpScore === 'number')
-  const tierA = results.filter((r) => r.tier === 'A').length
-  const avg = scored.length ? Math.round(scored.reduce((s, r) => s + r.icpScore, 0) / scored.length) : 0
+  const pct = total ? Math.round((completed / total) * 100) : 0
+  const remaining = total - completed
+  const estMin = Math.max(1, Math.ceil((remaining * EST_SECONDS_PER) / 60))
 
   return (
     <div style={styles.page}>
+      {running && (
+        <div style={styles.topbarTrack}>
+          <div style={{ ...styles.topbarFill, width: `${pct}%` }} />
+        </div>
+      )}
+
       <div style={styles.container}>
         <header style={styles.header}>
-          <div>
-            <h1 style={styles.title}>Sim GTM — ICP Accounts</h1>
-            <p style={styles.subtitle}>
-              {results.length} accounts scored · {tierA} Tier A · avg {avg}/100
-            </p>
+          <div style={styles.brand}>
+            <div style={styles.logo}>S</div>
+            <div>
+              <div style={styles.brandName}>Sim</div>
+              <div style={styles.brandSub}>GTM Intelligence · Enterprise Compliance</div>
+            </div>
           </div>
           <div style={styles.actions}>
+            <span style={styles.pill}>{total} accounts</span>
+            <span style={{ ...styles.pill, ...styles.pillGreen }}>{tierA} Tier A</span>
             <DownloadButton results={results} />
-            <RunButton onClick={rerunAll} disabled={busy} isLoading={runningAll} />
+            <RunButton onClick={runPipeline} disabled={busy} isLoading={running} />
           </div>
         </header>
 
-        {runningAll && (
-          <ProgressBar progress={progress} completed={completed} total={results.length} />
+        {running && (
+          <div style={styles.runStatus}>
+            Processing {completed} of {total}
+            {currentDomain ? ` · scoring ${currentDomain}` : ''}
+            {remaining > 0 ? ` · ~${estMin} min remaining` : ''}
+          </div>
         )}
 
-        <ResultsTable results={results} onRerun={rerunRow} runningRows={runningRows} />
+        <ResultsTable
+          results={results}
+          onRerun={rerunRow}
+          runningRows={runningRows}
+          currentDomain={currentDomain}
+        />
 
         <p style={styles.foot}>
-          Pre-scored against Sim's ICP. Click any row for the full breakdown and draft email · use ↻ to re-score one account live.
+          {avg ? `Average ${avg}/100 across scored accounts · ` : ''}
+          Click any row for the full breakdown and draft email · ↻ re-scores one account live.
         </p>
       </div>
     </div>
@@ -132,17 +144,47 @@ export default function App() {
 }
 
 const styles = {
-  page: { minHeight: '100%', padding: '40px 20px' },
-  container: { maxWidth: 1040, margin: '0 auto' },
+  page: { minHeight: '100%', padding: '36px 22px' },
+  container: { maxWidth: 1120, margin: '0 auto' },
+  topbarTrack: { position: 'fixed', top: 0, left: 0, right: 0, height: 2, background: 'transparent', zIndex: 50 },
+  topbarFill: { height: '100%', background: 'var(--accent)', transition: 'width 0.4s ease', boxShadow: '0 0 8px rgba(245,158,11,0.6)' },
   header: {
     display: 'flex',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
     gap: 16,
-    marginBottom: 18,
+    marginBottom: 22,
+    flexWrap: 'wrap',
   },
-  title: { margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: -0.3 },
-  subtitle: { margin: '6px 0 0', color: 'var(--muted)', fontSize: 14 },
-  actions: { display: 'flex', alignItems: 'center', gap: 10 },
-  foot: { color: 'var(--muted)', fontSize: 12.5, marginTop: 14, textAlign: 'center' },
+  brand: { display: 'flex', alignItems: 'center', gap: 12 },
+  logo: {
+    width: 36,
+    height: 36,
+    borderRadius: 9,
+    background: 'var(--accent)',
+    color: '#1a1a1a',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: 800,
+    fontSize: 19,
+    boxShadow: '0 1px 3px rgba(245,158,11,0.4)',
+  },
+  brandName: { fontSize: 20, fontWeight: 800, letterSpacing: -0.3, lineHeight: 1.1 },
+  brandSub: { fontSize: 12, color: 'var(--muted)', marginTop: 2 },
+  actions: { display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' },
+  pill: {
+    display: 'inline-block',
+    padding: '6px 12px',
+    borderRadius: 99,
+    background: 'var(--panel)',
+    border: '1px solid var(--border)',
+    boxShadow: 'var(--shadow)',
+    fontSize: 13,
+    fontWeight: 600,
+    color: 'var(--text)',
+  },
+  pillGreen: { color: 'var(--emerald)', borderColor: 'rgba(16,185,129,0.3)', background: 'rgba(16,185,129,0.07)' },
+  runStatus: { fontSize: 13, color: 'var(--muted)', margin: '0 0 14px', fontWeight: 500 },
+  foot: { color: 'var(--muted)', fontSize: 12.5, marginTop: 16, textAlign: 'center' },
 }

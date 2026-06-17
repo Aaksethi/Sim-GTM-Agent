@@ -1,12 +1,16 @@
 :root {
-  --bg: #f7f8fa;
+  --bg: #f8f8f7;          /* warm off-white */
   --panel: #ffffff;
-  --panel-2: #f1f3f5;
-  --border: #e6e8eb;
-  --text: #1a1d21;
-  --muted: #6b7280;
-  --accent: #4f46e5;
-  --hover: #f8f9fb;
+  --panel-2: #f3f3f1;
+  --border: #e5e5e3;
+  --text: #1a1a1a;
+  --muted: #737373;
+  --accent: #f59e0b;      /* amber — brand */
+  --emerald: #10b981;     /* high scores */
+  --danger: #ef4444;      /* low scores */
+  --zinc: #3f3f46;        /* partial bars */
+  --shadow: 0 1px 3px rgba(0,0,0,0.06);
+  --hover: #faf9f6;
 }
 
 * { box-sizing: border-box; }
@@ -16,20 +20,26 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
 }
 
-/* Spinner used by the run buttons. */
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeInRow { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-/* Kept for any row that wants to fade in (e.g. during a live re-run). */
-@keyframes fadeInRow {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* Row hover: subtle lift + left amber accent. */
+.datarow:hover { background: var(--hover); }
+.datarow:hover td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+
+.tnum { font-variant-numeric: tabular-nums; }
+.label {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
 }
 
-/* Subtle row hover on the results table. */
-.datarow:hover { background: var(--hover); }
-
-::selection { background: var(--accent); color: #fff; }
+::selection { background: var(--accent); color: #1a1a1a; }

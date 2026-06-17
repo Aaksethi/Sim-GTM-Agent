@@ -5,52 +5,60 @@ import { useState } from 'react'
 const CATEGORIES = [
   { key: 'industry', short: 'Industry', label: 'Industry fit', max: 20 },
   { key: 'size', short: 'Size', label: 'Company size', max: 10 },
-  { key: 'compliance', short: 'Comply', label: 'Compliance cert', max: 20 },
+  { key: 'compliance', short: 'Comply', label: 'Compliance', max: 20 },
   { key: 'idp_sso', short: 'SSO', label: 'IdP / SSO', max: 10 },
   { key: 'ai_footprint', short: 'AI', label: 'AI footprint', max: 15 },
   { key: 'displacement', short: 'Displace', label: 'Displacement', max: 15 },
   { key: 'compliance_hiring', short: 'Hiring', label: 'Compliance hiring', max: 10 },
 ]
 
-// Semantic colors tuned to read on a white background.
-const GREEN = '#16a34a'
-const AMBER = '#d97706'
-const RED = '#dc2626'
+const AMBER = '#f59e0b'
+const ZINC = '#3f3f46'
+const EMERALD = '#10b981'
+const DANGER = '#ef4444'
 
-// Color a category value by how full it is (points / max).
-function cellColor(points, max) {
-  if (!max) return 'var(--muted)'
-  const frac = points / max
-  if (frac >= 0.66) return GREEN
-  if (frac >= 0.33) return AMBER
-  if (frac > 0) return RED
-  return 'var(--muted)' // 0 / unknown
+// Mini-bar color: full/near-full = amber, partial = zinc, empty = transparent.
+function barColor(frac) {
+  if (frac >= 0.66) return AMBER
+  if (frac > 0) return ZINC
+  return 'transparent'
 }
 
-// Total -> badge colors + tier (OS thresholds: A 85+, B 70+, C 50+, else DQ).
-function tierBadge(score, tier) {
-  if (score === null || score === undefined || Number.isNaN(score)) {
-    return { score: '—', tier: '', fg: 'var(--muted)', bg: 'var(--panel-2)' }
-  }
-  if (score >= 85) return { score, tier: tier || 'A', fg: GREEN, bg: 'rgba(22,163,74,0.12)' }
-  if (score >= 70) return { score, tier: tier || 'B', fg: AMBER, bg: 'rgba(217,119,6,0.12)' }
-  if (score >= 50) return { score, tier: tier || 'C', fg: RED, bg: 'rgba(220,38,38,0.10)' }
-  return { score, tier: tier || 'DQ', fg: RED, bg: 'rgba(220,38,38,0.08)' }
+// Tier letter (from the backend's score — logic untouched) -> badge + glow colors.
+function tierInfo(tier, score) {
+  const t =
+    tier ||
+    (score == null ? '' : score >= 85 ? 'A' : score >= 70 ? 'B' : score >= 50 ? 'C' : 'DQ')
+  if (t === 'A') return { t, glow: 'rgba(16,185,129,0.30)', bg: EMERALD, fg: '#fff' }
+  if (t === 'B') return { t, glow: 'rgba(245,158,11,0.32)', bg: AMBER, fg: '#1a1a1a' }
+  if (t === 'C') return { t, glow: 'rgba(239,68,68,0.26)', bg: DANGER, fg: '#fff' }
+  if (t === 'DQ' || t === 'Disqualify') return { t: 'DQ', glow: 'rgba(239,68,68,0.18)', bg: '#b91c1c', fg: '#fff' }
+  return { t: '', glow: 'transparent', bg: 'var(--panel-2)', fg: 'var(--muted)' }
 }
 
-function statusColor(status) {
-  if (status === 'Done') return GREEN
-  if (status === 'Failed') return RED
-  return '#9ca3af' // pending / unknown
+function Dot({ color, text, pulse }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, color, fontWeight: 600, fontSize: 13 }}>
+      <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, animation: pulse ? 'pulse 1s ease-in-out infinite' : 'none' }} />
+      {text}
+    </span>
+  )
+}
+
+function StatusCell({ status, scoring }) {
+  if (scoring) return <Dot color={AMBER} text="Scoring…" pulse />
+  if (status === 'Done') return <Dot color={EMERALD} text="Done" />
+  if (status === 'Failed') return <Dot color={DANGER} text="Failed" />
+  return <Dot color="#a3a3a3" text="Queued" />
 }
 
 // One table row + its expandable detail row (breakdown + email).
-function Row({ r, onRerun, running }) {
+function Row({ r, onRerun, scoring, anyBusy }) {
   const [open, setOpen] = useState(false)
-  const badge = tierBadge(r.icpScore, r.tier)
   const hasScores = !!r.scores
   const hasEmail = !!(r.email && r.email.subject)
   const canExpand = hasScores || hasEmail || !!r.error
+  const ti = tierInfo(r.tier, r.icpScore)
 
   function copyEmail() {
     if (!hasEmail) return
@@ -62,18 +70,13 @@ function Row({ r, onRerun, running }) {
       <tr
         className="datarow"
         onClick={() => canExpand && setOpen((v) => !v)}
-        style={{
-          borderBottom: open ? 'none' : '1px solid var(--border)',
-          cursor: canExpand ? 'pointer' : 'default',
-        }}
+        style={{ borderBottom: open ? 'none' : '1px solid var(--border)', cursor: canExpand ? 'pointer' : 'default', transition: 'background 0.15s' }}
       >
-        <td style={td}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {canExpand && (
-              <span style={{ color: 'var(--accent)', fontSize: 11, width: 10 }}>{open ? '▾' : '▸'}</span>
-            )}
+        <td style={tdCompany}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+            <span style={{ color: 'var(--accent)', fontSize: 11, width: 9, transition: 'transform 0.2s', transform: open ? 'rotate(90deg)' : 'none', visibility: canExpand ? 'visible' : 'hidden' }}>▸</span>
             <div>
-              <div style={{ fontWeight: 600 }}>{r.company}</div>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>{r.company}</div>
               <div style={{ color: 'var(--muted)', fontSize: 12 }}>{r.domain}</div>
             </div>
           </div>
@@ -81,88 +84,92 @@ function Row({ r, onRerun, running }) {
 
         {CATEGORIES.map((c) => {
           const cell = hasScores ? r.scores[c.key] : null
-          const points = cell ? cell.points : null
+          const pts = cell ? cell.points : null
+          const frac = pts != null && c.max ? pts / c.max : 0
           return (
             <td key={c.key} style={tdNum}>
-              {points === null ? (
-                <span style={{ color: 'var(--muted)' }}>—</span>
+              {pts === null ? (
+                <span style={{ color: '#c4c4c2' }}>—</span>
               ) : (
-                <span style={{ color: cellColor(points, c.max), fontWeight: 700 }}>
-                  {points}
-                  <span style={{ color: 'var(--muted)', fontWeight: 400, fontSize: 11 }}>/{c.max}</span>
-                </span>
+                <>
+                  <div className="tnum" style={{ fontWeight: 700, fontSize: 13.5 }}>
+                    {pts}
+                    <span style={{ color: 'var(--muted)', fontWeight: 400, fontSize: 10.5 }}>/{c.max}</span>
+                  </div>
+                  <div style={miniTrack}>
+                    <div style={{ ...miniFill, width: `${Math.round(frac * 100)}%`, background: barColor(frac) }} />
+                  </div>
+                </>
               )}
             </td>
           )
         })}
 
         <td style={tdNum}>
-          <span style={{ ...pill, background: badge.bg, color: badge.fg }}>{badge.score}</span>
-        </td>
-        <td style={tdNum}>
-          {badge.tier ? (
-            <span style={{ ...tierPill, color: badge.fg, borderColor: badge.fg }}>{badge.tier}</span>
+          {r.icpScore == null ? (
+            <span style={{ color: '#c4c4c2' }}>—</span>
           ) : (
-            '—'
+            <span className="tnum" style={{ ...totalChip, boxShadow: `0 0 16px ${ti.glow}` }}>{r.icpScore}</span>
           )}
         </td>
-        <td style={td}>
+
+        <td style={tdNum}>
+          {ti.t ? <span style={{ ...tierPill, background: ti.bg, color: ti.fg }}>{ti.t}</span> : <span style={{ color: '#c4c4c2' }}>—</span>}
+        </td>
+
+        <td style={tdStatus}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, color: statusColor(r.status), fontWeight: 600 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: statusColor(r.status) }} />
-              {r.status}
-            </span>
+            <StatusCell status={r.status} scoring={scoring} />
             <button
               title="Re-score this account live"
               onClick={(e) => { e.stopPropagation(); onRerun && onRerun(r.domain) }}
-              disabled={running}
-              style={{ ...rerunBtn, cursor: running ? 'default' : 'pointer' }}
+              disabled={anyBusy}
+              style={{ ...rerunBtn, cursor: anyBusy ? 'default' : 'pointer', opacity: anyBusy && !scoring ? 0.4 : 1 }}
             >
-              {running ? <span style={miniSpinner} /> : '↻'}
+              {scoring ? <span style={miniSpinner} /> : '↻'}
             </button>
           </div>
         </td>
       </tr>
 
       {open && (
-        <tr style={{ borderBottom: '1px solid var(--border)' }}>
+        <tr>
           <td colSpan={CATEGORIES.length + 4} style={detailCell}>
-            {r.error && <div style={errorBox}>Failed: {r.error}</div>}
-
-            {hasScores && (
-              <div style={{ marginBottom: hasEmail ? 16 : 0 }}>
-                <div style={detailTitle}>Score breakdown — total {r.icpScore}/100</div>
-                {CATEGORIES.map((c) => {
-                  const cell = r.scores[c.key] || { points: 0, max: c.max, why: '' }
-                  const frac = c.max ? cell.points / c.max : 0
-                  return (
-                    <div key={c.key} style={breakdownRow}>
-                      <div style={{ width: 150, color: 'var(--text)' }}>{c.label}</div>
-                      <div style={{ width: 56, color: cellColor(cell.points, c.max), fontWeight: 700 }}>
-                        {cell.points}
-                        <span style={{ color: 'var(--muted)', fontWeight: 400 }}>/{c.max}</span>
-                      </div>
-                      <div style={barTrack}>
-                        <div style={{ ...barFill, width: `${Math.round(frac * 100)}%`, background: cellColor(cell.points, c.max) }} />
-                      </div>
-                      <div style={{ flex: 1, color: 'var(--muted)', fontSize: 13 }}>{cell.why || '—'}</div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-
-            {hasEmail && (
+            <div style={{ ...detailGrid, gridTemplateColumns: hasEmail ? '1.25fr 1fr' : '1fr' }}>
               <div>
-                <div style={emailHeader}>
-                  <span style={anglePill}>Angle: {r.email.angle || '—'}</span>
-                  <span style={{ color: 'var(--muted)', fontSize: 12 }}>Draft — review before sending</span>
-                  <button onClick={copyEmail} style={copyBtn}>Copy</button>
-                </div>
-                <div style={{ fontWeight: 700, marginBottom: 8 }}>Subject: {r.email.subject}</div>
-                <div style={emailBody}>{r.email.body}</div>
+                <div className="label" style={{ marginBottom: 10 }}>Score breakdown — {r.icpScore ?? '—'}/100</div>
+                {r.error && <div style={errorBox}>Failed: {r.error}</div>}
+                {hasScores &&
+                  CATEGORIES.map((c) => {
+                    const cell = r.scores[c.key] || { points: 0, max: c.max, why: '' }
+                    const frac = c.max ? cell.points / c.max : 0
+                    return (
+                      <div key={c.key} style={bRow}>
+                        <div style={{ width: 118, fontSize: 13 }}>{c.label}</div>
+                        <div className="tnum" style={{ width: 46, fontWeight: 700, fontSize: 13 }}>
+                          {cell.points}
+                          <span style={{ color: 'var(--muted)', fontWeight: 400 }}>/{c.max}</span>
+                        </div>
+                        <div style={bTrack}>
+                          <div style={{ ...bFill, width: `${Math.round(frac * 100)}%`, background: barColor(frac) }} />
+                        </div>
+                        <div style={{ flex: 1, color: 'var(--muted)', fontSize: 12.5 }}>{cell.why || '—'}</div>
+                      </div>
+                    )
+                  })}
               </div>
-            )}
+
+              {hasEmail && (
+                <div style={emailCol}>
+                  <div style={emailHead}>
+                    <span className="label">Draft email · {r.email.angle}</span>
+                    <button onClick={copyEmail} style={copyBtn}>Copy</button>
+                  </div>
+                  <div style={emailSubject}>Subject: {r.email.subject}</div>
+                  <div style={emailBody}>{r.email.body}</div>
+                </div>
+              )}
+            </div>
           </td>
         </tr>
       )}
@@ -170,11 +177,11 @@ function Row({ r, onRerun, running }) {
   )
 }
 
-// The table. Empty state when there are no accounts at all.
-export default function ResultsTable({ results, onRerun, runningRows }) {
+export default function ResultsTable({ results, onRerun, runningRows, currentDomain }) {
   if (!results || results.length === 0) {
-    return <div style={empty}>No accounts loaded yet.</div>
+    return <div style={empty}>No accounts loaded.</div>
   }
+  const anyBusy = !!currentDomain || (runningRows && runningRows.size > 0)
 
   return (
     <div style={wrap}>
@@ -183,10 +190,7 @@ export default function ResultsTable({ results, onRerun, runningRows }) {
           <tr>
             <th style={th}>Company</th>
             {CATEGORIES.map((c) => (
-              <th key={c.key} style={thNum} title={`${c.label} (max ${c.max})`}>
-                {c.short}
-                <span style={{ display: 'block', fontSize: 10, color: 'var(--muted)', fontWeight: 400 }}>/{c.max}</span>
-              </th>
+              <th key={c.key} style={thNum} title={`${c.label} (max ${c.max})`}>{c.short}</th>
             ))}
             <th style={thNum}>Total</th>
             <th style={thNum}>Tier</th>
@@ -194,129 +198,49 @@ export default function ResultsTable({ results, onRerun, runningRows }) {
           </tr>
         </thead>
         <tbody>
-          {results.map((r, i) => (
-            <Row key={`${r.domain}-${i}`} r={r} onRerun={onRerun} running={runningRows?.has(r.domain)} />
-          ))}
+          {results.map((r, i) => {
+            const scoring = currentDomain === r.domain || (runningRows && runningRows.has(r.domain))
+            return <Row key={`${r.domain}-${i}`} r={r} onRerun={onRerun} scoring={scoring} anyBusy={anyBusy} />
+          })}
         </tbody>
       </table>
     </div>
   )
 }
 
-const wrap = {
-  marginTop: 4,
-  border: '1px solid var(--border)',
-  borderRadius: 12,
-  overflowX: 'auto', // ~11 columns — scroll sideways on narrow screens
-  background: 'var(--panel)',
-  boxShadow: '0 1px 2px rgba(16,24,40,0.04), 0 1px 3px rgba(16,24,40,0.06)',
-}
-const table = { width: '100%', borderCollapse: 'collapse', fontSize: 14, minWidth: 900 }
-const th = {
+const wrap = { border: '1px solid var(--border)', borderRadius: 14, overflowX: 'auto', background: 'var(--panel)', boxShadow: 'var(--shadow)' }
+const table = { width: '100%', borderCollapse: 'collapse', fontSize: 14, minWidth: 980 }
+const thBase = {
   textAlign: 'left',
-  padding: '11px 14px',
+  padding: '12px 12px',
   color: 'var(--muted)',
-  fontSize: 11.5,
+  fontSize: 10,
   textTransform: 'uppercase',
-  letterSpacing: 0.6,
+  letterSpacing: '0.1em',
+  fontWeight: 600,
   borderBottom: '1px solid var(--border)',
-  background: 'var(--panel-2)',
   whiteSpace: 'nowrap',
 }
-const thNum = { ...th, textAlign: 'center' }
-const td = { padding: '12px 14px', verticalAlign: 'top', whiteSpace: 'nowrap', color: 'var(--text)' }
-const tdNum = { ...td, textAlign: 'center' }
-const pill = { display: 'inline-block', padding: '4px 10px', borderRadius: 99, fontWeight: 700, fontSize: 13 }
-const tierPill = {
-  display: 'inline-block',
-  padding: '2px 9px',
-  borderRadius: 99,
-  border: '1px solid',
-  fontWeight: 700,
-  fontSize: 12,
-}
-const empty = {
-  marginTop: 20,
-  padding: '48px 20px',
-  textAlign: 'center',
-  color: 'var(--muted)',
-  border: '1px dashed var(--border)',
-  borderRadius: 12,
-  background: 'var(--panel)',
-}
-const rerunBtn = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: 26,
-  height: 26,
-  borderRadius: 7,
-  border: '1px solid var(--border)',
-  background: '#fff',
-  color: 'var(--accent)',
-  fontSize: 14,
-  lineHeight: 1,
-  padding: 0,
-}
-const miniSpinner = {
-  width: 12,
-  height: 12,
-  border: '2px solid rgba(79,70,229,0.3)',
-  borderTopColor: 'var(--accent)',
-  borderRadius: '50%',
-  animation: 'spin 0.7s linear infinite',
-  display: 'inline-block',
-}
-const detailCell = { padding: '14px 16px 18px', background: 'var(--panel-2)', whiteSpace: 'normal' }
-const detailTitle = {
-  color: 'var(--muted)',
-  fontSize: 12,
-  textTransform: 'uppercase',
-  letterSpacing: 0.6,
-  marginBottom: 10,
-}
-const errorBox = {
-  color: '#b91c1c',
-  background: 'rgba(220,38,38,0.08)',
-  border: '1px solid rgba(220,38,38,0.30)',
-  borderRadius: 8,
-  padding: '10px 12px',
-  fontSize: 13,
-  marginBottom: 12,
-  whiteSpace: 'pre-wrap',
-}
-const breakdownRow = { display: 'flex', alignItems: 'center', gap: 12, padding: '4px 0' }
-const barTrack = { width: 120, height: 7, background: '#e5e7eb', borderRadius: 99, overflow: 'hidden' }
-const barFill = { height: '100%', borderRadius: 99 }
-const emailHeader = { display: 'flex', alignItems: 'center', gap: 12, padding: '4px 0 10px' }
-const anglePill = {
-  display: 'inline-block',
-  padding: '3px 10px',
-  borderRadius: 99,
-  background: 'rgba(79,70,229,0.10)',
-  color: 'var(--accent)',
-  fontSize: 12,
-  fontWeight: 700,
-  textTransform: 'capitalize',
-}
-const copyBtn = {
-  marginLeft: 'auto',
-  background: 'var(--accent)',
-  color: '#fff',
-  border: 'none',
-  borderRadius: 7,
-  padding: '5px 13px',
-  fontSize: 12,
-  fontWeight: 700,
-  cursor: 'pointer',
-}
-const emailBody = {
-  whiteSpace: 'pre-wrap',
-  lineHeight: 1.6,
-  color: 'var(--text)',
-  fontSize: 14,
-  background: 'var(--panel)',
-  border: '1px solid var(--border)',
-  borderRadius: 8,
-  padding: '13px 15px',
-}
+const th = thBase
+const thNum = { ...thBase, textAlign: 'center' }
+const tdCompany = { padding: '13px 14px', verticalAlign: 'middle', whiteSpace: 'nowrap' }
+const tdNum = { padding: '12px 10px', verticalAlign: 'middle', textAlign: 'center', whiteSpace: 'nowrap' }
+const tdStatus = { padding: '13px 14px', verticalAlign: 'middle', whiteSpace: 'nowrap' }
+const miniTrack = { width: 46, height: 4, background: '#ededeb', borderRadius: 99, overflow: 'hidden', margin: '5px auto 0' }
+const miniFill = { height: '100%', borderRadius: 99, transition: 'width 0.4s ease' }
+const totalChip = { display: 'inline-block', minWidth: 36, padding: '5px 9px', borderRadius: 10, fontWeight: 800, fontSize: 16, background: 'var(--panel)', border: '1px solid var(--border)' }
+const tierPill = { display: 'inline-block', padding: '3px 12px', borderRadius: 99, fontWeight: 700, fontSize: 12 }
+const rerunBtn = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 26, height: 26, borderRadius: 7, border: '1px solid var(--border)', background: '#fff', color: 'var(--accent)', fontSize: 14, lineHeight: 1, padding: 0 }
+const miniSpinner = { width: 12, height: 12, border: '2px solid rgba(245,158,11,0.3)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }
+const detailCell = { padding: '6px 18px 20px', background: 'var(--panel-2)', whiteSpace: 'normal', borderBottom: '1px solid var(--border)' }
+const detailGrid = { display: 'grid', gap: 26, paddingTop: 14 }
+const errorBox = { color: '#b91c1c', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 10, whiteSpace: 'pre-wrap' }
+const bRow = { display: 'flex', alignItems: 'center', gap: 12, padding: '4px 0' }
+const bTrack = { width: 90, height: 6, background: '#e6e6e3', borderRadius: 99, overflow: 'hidden' }
+const bFill = { height: '100%', borderRadius: 99 }
+const emailCol = { background: 'var(--panel)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px', boxShadow: 'var(--shadow)', alignSelf: 'start' }
+const emailHead = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }
+const copyBtn = { background: 'var(--accent)', color: '#1a1a1a', border: 'none', borderRadius: 7, padding: '4px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }
+const emailSubject = { fontWeight: 700, marginBottom: 8, fontSize: 14 }
+const emailBody = { whiteSpace: 'pre-wrap', lineHeight: 1.6, color: '#404040', fontSize: 13.5 }
+const empty = { marginTop: 20, padding: '48px 20px', textAlign: 'center', color: 'var(--muted)', border: '1px dashed var(--border)', borderRadius: 12, background: 'var(--panel)' }
