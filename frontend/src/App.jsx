@@ -230,9 +230,10 @@ export default function App() {
               </button>
             )}
             <button
-              onClick={runPipeline}
-              disabled={busy}
-              style={{ ...styles.rerunAllBtn, opacity: busy ? 0.5 : 1, cursor: busy ? 'not-allowed' : 'pointer' }}
+              type="button"
+              disabled
+              title="Disabled — use the ↺ icon on a row to re-score a single account"
+              style={{ ...styles.rerunAllBtn, opacity: 0.5, cursor: 'not-allowed' }}
             >
               ↻ Re-run all
             </button>
