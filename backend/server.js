@@ -202,9 +202,67 @@ app.get("/health", (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// Helper: call the Anthropic API, automatically retrying on rate limits.
-// 429 = rate_limit_error, 529 = overloaded. Both are retryable. We honor the
-// API's "retry-after" header when present, otherwise back off exponentially.
+// Helper: read an Anthropic streaming (SSE) response and accumulate the text.
+//
+// We STREAM because a single enrichment can run for minutes while Claude works
+// through Clay's MCP tool loop — and Node's built-in fetch aborts a NON-stream
+// request that takes longer than ~5 minutes ("fetch failed"). Streaming makes
+// the response headers arrive immediately and keeps bytes flowing, so that
+// timeout never trips. Returns the joined text of every text delta; throws if
+// the stream carries an error event.
+// ---------------------------------------------------------------------------
+async function readAnthropicStream(response) {
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let text = "";
+  let streamError = null;
+
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    // SSE events are newline-delimited; process whole lines, keep the remainder.
+    const lines = buffer.split("\n");
+    buffer = lines.pop() || "";
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (!line.startsWith("data:")) continue;
+      const payload = line.slice(5).trim();
+      if (!payload || payload === "[DONE]") continue;
+      let evt;
+      try {
+        evt = JSON.parse(payload);
+      } catch {
+        continue;
+      }
+      if (evt.type === "content_block_delta" && evt.delta?.type === "text_delta") {
+        text += evt.delta.text;
+      } else if (evt.type === "error") {
+        streamError = evt.error || evt;
+      }
+    }
+  }
+
+  if (streamError) {
+    const e = new Error(
+      typeof streamError === "string"
+        ? streamError
+        : streamError.message || JSON.stringify(streamError),
+    );
+    e.anthropic = streamError;
+    throw e;
+  }
+  return text;
+}
+
+// ---------------------------------------------------------------------------
+// Helper: call the Anthropic API with STREAMING + automatic retries.
+// Retries 429 (rate_limit) and 529 (overloaded), honoring "retry-after", and
+// retries thrown network errors with exponential backoff. Returns either
+// { text } (the accumulated model text) or { error } (a non-retryable API
+// error object). Throws only if a thrown error survives all retries.
 // ---------------------------------------------------------------------------
 async function callAnthropicWithRetry(requestBody, maxRetries = 4) {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -217,31 +275,38 @@ async function callAnthropicWithRetry(requestBody, maxRetries = 4) {
           "anthropic-beta": "mcp-client-2025-11-20",
           "content-type": "application/json",
         },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify({ ...requestBody, stream: true }),
       });
 
-      // Not rate limited (or out of retries) — hand the response back as-is.
-      const retryable = apiResponse.status === 429 || apiResponse.status === 529;
-      if (!retryable || attempt === maxRetries) {
-        return apiResponse;
+      // Retry rate-limit / overloaded statuses.
+      if (apiResponse.status === 429 || apiResponse.status === 529) {
+        if (attempt === maxRetries) {
+          const errText = await apiResponse.text().catch(() => "");
+          return { error: { type: "rate_limit_error", message: errText.slice(0, 300) } };
+        }
+        const retryAfter = Number(apiResponse.headers.get("retry-after"));
+        const waitMs =
+          Number.isFinite(retryAfter) && retryAfter > 0
+            ? Math.min(retryAfter * 1000, 30000)
+            : Math.min(2000 * 2 ** attempt, 30000);
+        console.warn(
+          `Rate limited (HTTP ${apiResponse.status}). Waiting ${waitMs}ms, then retry ${attempt + 1}/${maxRetries}...`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, waitMs));
+        continue;
       }
 
-      // Work out how long to wait: prefer the API's retry-after (seconds),
-      // capped at 30s; otherwise exponential backoff (2s, 4s, 8s, ...).
-      const retryAfter = Number(apiResponse.headers.get("retry-after"));
-      const waitMs =
-        Number.isFinite(retryAfter) && retryAfter > 0
-          ? Math.min(retryAfter * 1000, 30000)
-          : Math.min(2000 * 2 ** attempt, 30000);
+      // Any other non-OK status is not retryable — surface the error body.
+      if (!apiResponse.ok) {
+        const errData = await apiResponse.json().catch(() => null);
+        return { error: errData?.error || { message: `Anthropic HTTP ${apiResponse.status}` } };
+      }
 
-      console.warn(
-        `Rate limited (HTTP ${apiResponse.status}). Waiting ${waitMs}ms, then retry ${attempt + 1}/${maxRetries}...`,
-      );
-      await new Promise((resolve) => setTimeout(resolve, waitMs));
+      // 200 OK — stream the SSE body and accumulate the model's text.
+      const text = await readAnthropicStream(apiResponse);
+      return { text };
     } catch (err) {
-      // A THROWN error means the request never completed — a network blip,
-      // socket reset, or a timeout on a slow enrichment. Retry it too (the old
-      // code only retried HTTP 429/529 and let thrown errors fail immediately).
+      // A THROWN error (network blip, socket reset, mid-stream failure). Retry.
       if (attempt === maxRetries) throw err;
       const waitMs = Math.min(2000 * 2 ** attempt, 30000);
       console.warn(
@@ -319,24 +384,17 @@ app.post("/enrich", async (req, res) => {
   };
 
   try {
-    // Call the Anthropic API (retries automatically on 429/529 rate limits).
-    const apiResponse = await callAnthropicWithRetry(requestBody);
+    // Call the Anthropic API (streaming; retries automatically on 429/529 and
+    // network errors). Returns { text } on success or { error } on an API error.
+    const result = await callAnthropicWithRetry(requestBody);
 
-    // Turn the API's HTTP response into a JS object.
-    const data = await apiResponse.json();
-
-    // The API can return an { error: ... } object (bad key, bad request, etc.).
-    if (data.error) {
-      console.error("Anthropic API returned an error:", data.error);
-      return res.status(502).json({ error: data.error });
+    // The API can report an error object (bad key, bad request, rate limit, etc.).
+    if (result.error) {
+      console.error("Anthropic API returned an error:", result.error);
+      return res.status(502).json({ error: result.error });
     }
 
-    // The response "content" is an ARRAY of blocks (text, tool calls, etc.).
-    // We only want the text blocks. Join them into one string.
-    const textOutput = (data.content || [])
-      .filter((block) => block.type === "text")
-      .map((block) => block.text)
-      .join("");
+    const textOutput = result.text || "";
 
     // The model usually narrates during the MCP tool loop and wraps the final
     // JSON in a ```json fence, so we EXTRACT the JSON object rather than trying
@@ -350,9 +408,9 @@ app.post("/enrich", async (req, res) => {
     console.error("Could not parse model output as JSON. First 500 chars:", textOutput.slice(0, 500));
     return res.status(200).json({ raw: textOutput });
   } catch (networkError) {
-    // fetch() itself threw — network down, DNS issue, etc.
+    // The streamed request threw and exhausted retries — network down, etc.
     console.error("Network error calling the Anthropic API:", networkError);
-    return res.status(500).json({ error: "Failed to reach the Anthropic API." });
+    return res.status(500).json({ error: "Failed to reach the Anthropic API after retries." });
   }
 });
 

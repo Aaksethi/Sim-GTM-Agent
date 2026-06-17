@@ -1,15 +1,13 @@
 import { useState } from 'react'
 
-// The 7 ICP categories, in display order. Keys match the backend's scores object
-// and the maxes match clay-icp-score.md (they sum to 100).
 const CATEGORIES = [
-  { key: 'industry', short: 'Industry', label: 'Industry fit', max: 20 },
-  { key: 'size', short: 'Size', label: 'Company size', max: 10 },
-  { key: 'compliance', short: 'Comply', label: 'Compliance', max: 20 },
+  { key: 'industry', short: 'IND', label: 'Industry fit', max: 20 },
+  { key: 'size', short: 'SIZE', label: 'Company size', max: 10 },
+  { key: 'compliance', short: 'COMPLY', label: 'Compliance', max: 20 },
   { key: 'idp_sso', short: 'SSO', label: 'IdP / SSO', max: 10 },
   { key: 'ai_footprint', short: 'AI', label: 'AI footprint', max: 15 },
-  { key: 'displacement', short: 'Displace', label: 'Displacement', max: 15 },
-  { key: 'compliance_hiring', short: 'Hiring', label: 'Compliance hiring', max: 10 },
+  { key: 'displacement', short: 'DISPLACE', label: 'Displacement', max: 15 },
+  { key: 'compliance_hiring', short: 'HIRE', label: 'Compliance hiring', max: 10 },
 ]
 
 const AMBER = '#f59e0b'
@@ -17,14 +15,12 @@ const ZINC = '#3f3f46'
 const EMERALD = '#10b981'
 const DANGER = '#ef4444'
 
-// Mini-bar color: full/near-full = amber, partial = zinc, empty = transparent.
 function barColor(frac) {
   if (frac >= 0.66) return AMBER
   if (frac > 0) return ZINC
   return 'transparent'
 }
 
-// Tier letter (from the backend's score — logic untouched) -> badge + glow colors.
 function tierInfo(tier, score) {
   const t =
     tier ||
@@ -36,10 +32,14 @@ function tierInfo(tier, score) {
   return { t: '', glow: 'transparent', bg: 'var(--panel-2)', fg: 'var(--muted)' }
 }
 
-function Dot({ color, text, pulse }) {
+function Dot({ color, text, pulse, empty }) {
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, color, fontWeight: 600, fontSize: 13 }}>
-      <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, animation: pulse ? 'pulse 1s ease-in-out infinite' : 'none' }} />
+      {empty ? (
+        <span style={{ width: 8, height: 8, borderRadius: '50%', border: `1.5px solid ${color}`, background: 'transparent' }} />
+      ) : (
+        <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, animation: pulse ? 'pulse 1s ease-in-out infinite' : 'none' }} />
+      )}
       {text}
     </span>
   )
@@ -49,10 +49,9 @@ function StatusCell({ status, scoring }) {
   if (scoring) return <Dot color={AMBER} text="Scoring…" pulse />
   if (status === 'Done') return <Dot color={EMERALD} text="Done" />
   if (status === 'Failed') return <Dot color={DANGER} text="Failed" />
-  return <Dot color="#a3a3a3" text="Queued" />
+  return <Dot color="#a3a3a3" text="Queued" empty />
 }
 
-// One table row + its expandable detail row (breakdown + email).
 function Row({ r, onRerun, scoring, anyBusy }) {
   const [open, setOpen] = useState(false)
   const hasScores = !!r.scores
@@ -70,7 +69,7 @@ function Row({ r, onRerun, scoring, anyBusy }) {
       <tr
         className="datarow"
         onClick={() => canExpand && setOpen((v) => !v)}
-        style={{ borderBottom: open ? 'none' : '1px solid var(--border)', cursor: canExpand ? 'pointer' : 'default', transition: 'background 0.15s' }}
+        style={{ borderBottom: open ? 'none' : '0.5px solid var(--border)', cursor: canExpand ? 'pointer' : 'default', transition: 'background 0.15s' }}
       >
         <td style={tdCompany}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
@@ -118,23 +117,24 @@ function Row({ r, onRerun, scoring, anyBusy }) {
         </td>
 
         <td style={tdStatus}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <StatusCell status={r.status} scoring={scoring} />
-            <button
-              title="Re-score this account live"
-              onClick={(e) => { e.stopPropagation(); onRerun && onRerun(r.domain) }}
-              disabled={anyBusy}
-              style={{ ...rerunBtn, cursor: anyBusy ? 'default' : 'pointer', opacity: anyBusy && !scoring ? 0.4 : 1 }}
-            >
-              {scoring ? <span style={miniSpinner} /> : '↻'}
-            </button>
-          </div>
+          <StatusCell status={r.status} scoring={scoring} />
+        </td>
+
+        <td style={tdRerun}>
+          <button
+            className="rerun-btn"
+            title="Re-score this account"
+            onClick={(e) => { e.stopPropagation(); onRerun && onRerun(r.domain) }}
+            disabled={anyBusy}
+          >
+            {scoring ? <span style={miniSpinner} /> : '↺'}
+          </button>
         </td>
       </tr>
 
       {open && (
         <tr>
-          <td colSpan={CATEGORIES.length + 4} style={detailCell}>
+          <td colSpan={CATEGORIES.length + 5} style={detailCell}>
             <div style={{ ...detailGrid, gridTemplateColumns: hasEmail ? '1.25fr 1fr' : '1fr' }}>
               <div>
                 <div className="label" style={{ marginBottom: 10 }}>Score breakdown — {r.icpScore ?? '—'}/100</div>
@@ -162,7 +162,7 @@ function Row({ r, onRerun, scoring, anyBusy }) {
               {hasEmail && (
                 <div style={emailCol}>
                   <div style={emailHead}>
-                    <span className="label">Draft email · {r.email.angle}</span>
+                    <span className="label">DRAFT EMAIL · {r.company.toUpperCase()} · TIER {ti.t} · {r.icpScore}/100</span>
                     <button onClick={copyEmail} style={copyBtn}>Copy</button>
                   </div>
                   <div style={emailSubject}>Subject: {r.email.subject}</div>
@@ -195,6 +195,7 @@ export default function ResultsTable({ results, onRerun, runningRows, currentDom
             <th style={thNum}>Total</th>
             <th style={thNum}>Tier</th>
             <th style={th}>Status</th>
+            <th style={thNum}></th>
           </tr>
         </thead>
         <tbody>
@@ -208,7 +209,7 @@ export default function ResultsTable({ results, onRerun, runningRows, currentDom
   )
 }
 
-const wrap = { border: '1px solid var(--border)', borderRadius: 14, overflowX: 'auto', background: 'var(--panel)', boxShadow: 'var(--shadow)' }
+const wrap = { border: '0.5px solid var(--border)', borderRadius: 14, overflowX: 'auto', background: 'var(--panel)', boxShadow: 'var(--shadow)' }
 const table = { width: '100%', borderCollapse: 'collapse', fontSize: 14, minWidth: 980 }
 const thBase = {
   textAlign: 'left',
@@ -218,7 +219,7 @@ const thBase = {
   textTransform: 'uppercase',
   letterSpacing: '0.1em',
   fontWeight: 600,
-  borderBottom: '1px solid var(--border)',
+  borderBottom: '0.5px solid var(--border)',
   whiteSpace: 'nowrap',
 }
 const th = thBase
@@ -226,21 +227,21 @@ const thNum = { ...thBase, textAlign: 'center' }
 const tdCompany = { padding: '13px 14px', verticalAlign: 'middle', whiteSpace: 'nowrap' }
 const tdNum = { padding: '12px 10px', verticalAlign: 'middle', textAlign: 'center', whiteSpace: 'nowrap' }
 const tdStatus = { padding: '13px 14px', verticalAlign: 'middle', whiteSpace: 'nowrap' }
-const miniTrack = { width: 46, height: 4, background: '#ededeb', borderRadius: 99, overflow: 'hidden', margin: '5px auto 0' }
+const tdRerun = { padding: '13px 8px', verticalAlign: 'middle', textAlign: 'center', width: 40 }
+const miniTrack = { width: 46, height: 2, background: '#ededeb', borderRadius: 99, overflow: 'hidden', margin: '5px auto 0' }
 const miniFill = { height: '100%', borderRadius: 99, transition: 'width 0.4s ease' }
-const totalChip = { display: 'inline-block', minWidth: 36, padding: '5px 9px', borderRadius: 10, fontWeight: 800, fontSize: 16, background: 'var(--panel)', border: '1px solid var(--border)' }
+const totalChip = { display: 'inline-block', minWidth: 36, padding: '5px 9px', borderRadius: 10, fontWeight: 800, fontSize: 16, background: 'var(--panel)', border: '0.5px solid var(--border)' }
 const tierPill = { display: 'inline-block', padding: '3px 12px', borderRadius: 99, fontWeight: 700, fontSize: 12 }
-const rerunBtn = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 26, height: 26, borderRadius: 7, border: '1px solid var(--border)', background: '#fff', color: 'var(--accent)', fontSize: 14, lineHeight: 1, padding: 0 }
 const miniSpinner = { width: 12, height: 12, border: '2px solid rgba(245,158,11,0.3)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }
-const detailCell = { padding: '6px 18px 20px', background: 'var(--panel-2)', whiteSpace: 'normal', borderBottom: '1px solid var(--border)' }
+const detailCell = { padding: '6px 18px 20px', background: 'var(--panel-2)', whiteSpace: 'normal', borderBottom: '0.5px solid var(--border)' }
 const detailGrid = { display: 'grid', gap: 26, paddingTop: 14 }
 const errorBox = { color: '#b91c1c', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 10, whiteSpace: 'pre-wrap' }
 const bRow = { display: 'flex', alignItems: 'center', gap: 12, padding: '4px 0' }
 const bTrack = { width: 90, height: 6, background: '#e6e6e3', borderRadius: 99, overflow: 'hidden' }
 const bFill = { height: '100%', borderRadius: 99 }
-const emailCol = { background: 'var(--panel)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px', boxShadow: 'var(--shadow)', alignSelf: 'start' }
+const emailCol = { background: '#f0f0ef', border: '0.5px solid var(--border)', borderRadius: 8, padding: '14px 16px', alignSelf: 'start', fontFamily: "'Courier New', monospace" }
 const emailHead = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }
-const copyBtn = { background: 'var(--accent)', color: '#1a1a1a', border: 'none', borderRadius: 7, padding: '4px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }
-const emailSubject = { fontWeight: 700, marginBottom: 8, fontSize: 14 }
-const emailBody = { whiteSpace: 'pre-wrap', lineHeight: 1.6, color: '#404040', fontSize: 13.5 }
+const copyBtn = { background: 'var(--accent)', color: '#1a1a1a', border: 'none', borderRadius: 7, padding: '4px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }
+const emailSubject = { fontWeight: 700, marginBottom: 8, fontSize: 12, fontFamily: "'Courier New', monospace" }
+const emailBody = { whiteSpace: 'pre-wrap', lineHeight: 1.8, color: '#404040', fontSize: 12, fontFamily: "'Courier New', monospace" }
 const empty = { marginTop: 20, padding: '48px 20px', textAlign: 'center', color: 'var(--muted)', border: '1px dashed var(--border)', borderRadius: 12, background: 'var(--panel)' }

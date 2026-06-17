@@ -43,3 +43,17 @@ body {
 }
 
 ::selection { background: var(--accent); color: #1a1a1a; }
+
+.rerun-btn {
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  line-height: 1;
+  font-family: inherit;
+}
+.rerun-btn:hover { color: var(--accent); }
+.rerun-btn:disabled { cursor: default; opacity: 0.4; }

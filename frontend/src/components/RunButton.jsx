@@ -28,7 +28,7 @@ const btn = {
   alignItems: 'center',
   gap: 8,
   background: 'var(--accent)',
-  color: '#1a1a1a',
+  color: '#ffffff',
   border: 'none',
   borderRadius: 9,
   padding: '9px 18px',
