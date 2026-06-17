@@ -124,6 +124,77 @@ function extractJson(text) {
 }
 
 // ---------------------------------------------------------------------------
+// Clay OAuth: keep a valid access token without manual hourly refreshes.
+//
+// Clay's MCP server uses OAuth with short-lived (~1h) access tokens. Instead of
+// pasting a new token every hour, we seed the backend ONCE with a long-lived
+// refresh token + client_id (captured by clay-auth.mjs, stored as env vars) and
+// exchange them for a fresh access token on demand — cached until shortly before
+// it expires. Rotation-aware: if Clay returns a new refresh token, we adopt it
+// for the life of this process.
+// ---------------------------------------------------------------------------
+let clayRefreshToken = process.env.CLAY_REFRESH_TOKEN || null;
+const clayClientId = process.env.CLAY_CLIENT_ID || null;
+let clayAccessToken = null;
+let clayAccessExpiry = 0; // epoch ms when the cached access token expires
+
+async function getClayAccessToken() {
+  // Legacy/manual fallback: if refresh creds aren't set but a raw token is, use
+  // it as-is (the old "paste a token every hour" mode still works).
+  const haveRefreshCreds = clayRefreshToken && clayClientId;
+  if (!haveRefreshCreds) {
+    if (process.env.CLAY_MCP_TOKEN) return process.env.CLAY_MCP_TOKEN;
+    throw new Error(
+      "Clay auth not configured. Set CLAY_REFRESH_TOKEN + CLAY_CLIENT_ID (run clay-auth.mjs), or CLAY_MCP_TOKEN.",
+    );
+  }
+
+  // Reuse the cached access token until ~2 minutes before it expires.
+  if (clayAccessToken && Date.now() < clayAccessExpiry - 120000) {
+    return clayAccessToken;
+  }
+
+  const res = await fetch("https://api.clay.com/oauth/token", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: clayRefreshToken,
+      client_id: clayClientId,
+      resource: "https://api.clay.com/v3/mcp",
+    }).toString(),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    // 400 invalid_grant => the refresh token is dead (revoked/expired/rotated
+    // away). Tell the operator exactly how to recover.
+    throw new Error(
+      `Clay token refresh failed (HTTP ${res.status}): ${body.slice(0, 200)}` +
+        (res.status === 400
+          ? " — the refresh token is no longer valid. Re-run clay-auth.mjs and update CLAY_REFRESH_TOKEN in Render."
+          : ""),
+    );
+  }
+
+  const tok = await res.json();
+  if (!tok.access_token) throw new Error("Clay token refresh returned no access_token.");
+
+  clayAccessToken = tok.access_token;
+  clayAccessExpiry = Date.now() + (Number(tok.expires_in) || 3600) * 1000;
+
+  // Rotation: if Clay handed back a new refresh token, adopt it.
+  if (tok.refresh_token && tok.refresh_token !== clayRefreshToken) {
+    clayRefreshToken = tok.refresh_token;
+    console.log("Clay rotated the refresh token; now using the new one (in memory).");
+  }
+  console.log(
+    `Clay access token refreshed (valid ~${Math.round((clayAccessExpiry - Date.now()) / 60000)} min).`,
+  );
+  return clayAccessToken;
+}
+
+// ---------------------------------------------------------------------------
 // Route 1: health check. Handy to confirm the server is up.
 // ---------------------------------------------------------------------------
 app.get("/health", (req, res) => {
@@ -214,6 +285,15 @@ app.post("/enrich", async (req, res) => {
     `  "email": { "subject": string, "body": string, "angle": "self-host" | "displacement" | "ai-governance" }  // OR null if total < 70\n` +
     `}`;
 
+  // Get a valid Clay access token (auto-refreshed and cached between calls).
+  let clayToken;
+  try {
+    clayToken = await getClayAccessToken();
+  } catch (authErr) {
+    console.error("Clay auth error:", authErr.message);
+    return res.status(502).json({ error: authErr.message });
+  }
+
   // The request body for the Anthropic Messages API.
   const requestBody = {
     model: "claude-sonnet-4-6",
@@ -227,7 +307,7 @@ app.post("/enrich", async (req, res) => {
         type: "url",
         url: "https://api.clay.com/v3/mcp",
         name: "clay",
-        authorization_token: process.env.CLAY_MCP_TOKEN,
+        authorization_token: clayToken,
       },
     ],
 
@@ -281,4 +361,11 @@ app.post("/enrich", async (req, res) => {
 // ---------------------------------------------------------------------------
 app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
+  const mode =
+    process.env.CLAY_REFRESH_TOKEN && process.env.CLAY_CLIENT_ID
+      ? "auto-refresh (CLAY_REFRESH_TOKEN + CLAY_CLIENT_ID)"
+      : process.env.CLAY_MCP_TOKEN
+        ? "manual token (CLAY_MCP_TOKEN)"
+        : "NOT CONFIGURED — set CLAY_REFRESH_TOKEN + CLAY_CLIENT_ID";
+  console.log("Clay auth mode:", mode);
 });
