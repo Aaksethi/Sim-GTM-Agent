@@ -57,21 +57,23 @@ async function enrichOne(domain) {
   }
 }
 
-// Builds the insight-strip sentence dynamically from the top-scoring Tier A accounts.
+// Builds the insight-strip sentence dynamically. Tier A and Tier B are both
+// reachable today, so the count combines them; the named accounts are still the
+// two highest-scoring overall.
 function buildInsight(rows) {
-  const aList = rows
-    .filter((r) => r.tier === 'A' || (typeof r.icpScore === 'number' && r.icpScore >= 85))
+  const reachable = rows
+    .filter((r) => r.tier === 'A' || r.tier === 'B')
     .sort((a, b) => (b.icpScore || 0) - (a.icpScore || 0))
-  if (aList.length === 0) {
+  if (reachable.length === 0) {
     return {
-      bold: 'No Tier A accounts yet.',
+      bold: 'No accounts ready yet.',
       muted: ' Keep scoring — the strongest enterprise-compliance fits for Sim surface here with ready-to-send drafts.',
     }
   }
-  const names = aList.slice(0, 2).map((r) => `${r.company} (${r.icpScore})`).join(' and ')
-  const s = aList.length > 1 ? 's' : ''
+  const names = reachable.slice(0, 2).map((r) => `${r.company} (${r.icpScore})`).join(' and ')
+  const s = reachable.length > 1 ? 's' : ''
   return {
-    bold: `${aList.length} account${s} ready to contact today. ${names}`,
+    bold: `${reachable.length} account${s} ready to contact today. ${names}`,
     muted: " match Sim's enterprise compliance ICP most closely — personalized drafts are ready below.",
   }
 }
@@ -178,7 +180,7 @@ export default function App() {
               <span style={styles.logoFallback}>sim</span>
             ) : (
               <img
-                src="/sim-logo.svg"
+                src="/sim-logo.png"
                 alt="Sim"
                 height={26}
                 style={{ width: 'auto', display: 'block', flexShrink: 0 }}
@@ -254,11 +256,21 @@ export default function App() {
           currentDomain={currentDomain}
         />
 
+        {/* ── Powered by ── */}
+        <div style={styles.poweredBy}>
+          <span style={styles.poweredLabel}>POWERED BY</span>
+          <div style={styles.toolRow}>
+            {['Claude Code', 'Clay', 'Apollo', 'Firecrawl'].map((tool) => (
+              <span key={tool} style={styles.toolChip}>{tool}</span>
+            ))}
+          </div>
+        </div>
+
         {/* ── Footer ── */}
         <div style={styles.footer}>
           <div style={styles.footLeft}>
             <span style={styles.footText}>
-              Built by Aakash Sethi · GTM Agent OS · github.com/Aaksethi/
+              Built by Aakash Sethi · GTM Agent OS · github.com/Aaksethi/gtm-agent-os
             </span>
             {hasScored && (
               <button
@@ -386,13 +398,19 @@ const styles = {
     fontFamily: 'inherit',
   },
 
+  /* Powered by */
+  poweredBy: { display: 'flex', alignItems: 'center', gap: 14, marginTop: 24, flexWrap: 'wrap' },
+  poweredLabel: { fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#a3a3a3' },
+  toolRow: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  toolChip: { fontSize: 12, color: '#737373', background: '#ffffff', border: '0.5px solid #e5e5e3', borderRadius: 6, padding: '5px 12px' },
+
   /* Footer */
   footer: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 16,
-    marginTop: 20,
+    marginTop: 14,
     flexWrap: 'wrap',
   },
   footLeft: { display: 'flex', alignItems: 'center', gap: 14 },
