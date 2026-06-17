@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import RunButton from './components/RunButton'
 import ResultsTable from './components/ResultsTable'
@@ -10,11 +10,31 @@ import accounts from './data/accounts.json'
 const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 const BACKEND_URL = `${API_BASE}/enrich`
 
-// Pacing between domains on a run, to stay under the Anthropic
-// input-tokens-per-minute limit on a Tier 1 account.
-const DELAY_BETWEEN_DOMAINS_MS = 45000
-const EST_SECONDS_PER = 75 // rough wall-clock per domain (enrich + pacing) for the ETA
+// Pacing between domains on a full run. 90s keeps a sequential run under the
+// Anthropic Tier-1 input-tokens-per-minute limit (one ~25k-token call/min).
+const DELAY_BETWEEN_DOMAINS_MS = 90000
+const EST_SECONDS_PER = 120 // rough wall-clock per domain (enrich + pacing) for the ETA
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+
+// localStorage key for persisted progress. Bump the suffix if the row shape changes.
+const STORAGE_KEY = 'sim-accounts-v1'
+
+// Starting rows: merge any locally-saved scored rows over the bundled pending
+// list, so a refresh never wipes completed work. Iterating the canonical
+// `accounts` list keeps things correct if domains are later added or removed.
+function loadInitial() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+    if (!Array.isArray(saved)) return accounts
+    const byDomain = new Map(saved.map((r) => [r.domain, r]))
+    return accounts.map((base) => {
+      const s = byDomain.get(base.domain)
+      return s && s.status === 'Done' ? s : base
+    })
+  } catch {
+    return accounts
+  }
+}
 
 // Enrich one domain via the backend and return a normalized row. Never throws.
 async function enrichOne(domain) {
@@ -47,20 +67,32 @@ async function enrichOne(domain) {
 }
 
 export default function App() {
-  // The 36 accounts load instantly from the bundled list (status "pending").
-  const [results, setResults] = useState(accounts)
+  // Start from saved progress (localStorage) merged over the bundled list, so a
+  // refresh never wipes completed scores. Falls back to the pending list.
+  const [results, setResults] = useState(loadInitial)
   const [running, setRunning] = useState(false)          // full pipeline run
   const [runningRows, setRunningRows] = useState(() => new Set()) // per-row re-runs
   const [currentDomain, setCurrentDomain] = useState(null)       // row being scored now
   const [completed, setCompleted] = useState(0)
 
+  // Persist every change so 1:1 scoring (and partial runs) survive a refresh.
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(results))
+    } catch {
+      /* storage full or unavailable — non-fatal */
+    }
+  }, [results])
+
   const total = results.length
   const tierA = results.filter((r) => r.tier === 'A').length
   const scored = results.filter((r) => typeof r.icpScore === 'number')
   const avg = scored.length ? Math.round(scored.reduce((s, r) => s + r.icpScore, 0) / scored.length) : 0
+  const hasScored = scored.length > 0
   const busy = running || runningRows.size > 0
 
-  // Re-score a single account (the quick "refresh just this one").
+  // Re-score a single account (the quick "refresh just this one"). This is the
+  // primary 1:1 manual flow — each result is persisted by the effect above.
   async function rerunRow(domain) {
     if (running || runningRows.has(domain)) return
     setRunningRows((p) => new Set(p).add(domain))
@@ -90,6 +122,30 @@ export default function App() {
     setRunning(false)
   }
 
+  // Export the current rows as accounts.json — drop this into src/data/ and commit
+  // to freeze the scored set for the founder (localStorage is per-browser only).
+  function saveSnapshot() {
+    const json = JSON.stringify(results, null, 2)
+    const blob = new Blob([json], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'accounts.json'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  // Wipe saved progress and reload the bundled pending list (in case data goes stale).
+  function resetData() {
+    if (busy) return
+    if (!window.confirm('Clear all saved scores and reset every row to pending? This cannot be undone.')) return
+    try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
+    setResults(accounts)
+    setCompleted(0)
+  }
+
   const pct = total ? Math.round((completed / total) * 100) : 0
   const remaining = total - completed
   const estMin = Math.max(1, Math.ceil((remaining * EST_SECONDS_PER) / 60))
@@ -113,8 +169,14 @@ export default function App() {
           </div>
           <div style={styles.actions}>
             <span style={styles.pill}>{total} accounts</span>
+            <span style={{ ...styles.pill, ...styles.pillNeutral }}>{scored.length} scored</span>
             <span style={{ ...styles.pill, ...styles.pillGreen }}>{tierA} Tier A</span>
             <DownloadButton results={results} />
+            {hasScored && (
+              <button onClick={saveSnapshot} disabled={busy} style={{ ...styles.saveBtn, opacity: busy ? 0.5 : 1, cursor: busy ? 'not-allowed' : 'pointer' }}>
+                ⤓ Save snapshot
+              </button>
+            )}
             <RunButton onClick={runPipeline} disabled={busy} isLoading={running} />
           </div>
         </header>
@@ -134,10 +196,17 @@ export default function App() {
           currentDomain={currentDomain}
         />
 
-        <p style={styles.foot}>
-          {avg ? `Average ${avg}/100 across scored accounts · ` : ''}
-          Click any row for the full breakdown and draft email · ↻ re-scores one account live.
-        </p>
+        <div style={styles.footRow}>
+          <p style={styles.foot}>
+            {avg ? `Average ${avg}/100 across ${scored.length} scored · ` : ''}
+            Click ↻ to score one account at a time — wait ~60s between rows to stay under the rate limit. Progress saves automatically.
+          </p>
+          {hasScored && (
+            <button onClick={resetData} disabled={busy} style={{ ...styles.resetBtn, cursor: busy ? 'not-allowed' : 'pointer', opacity: busy ? 0.5 : 1 }}>
+              Reset all
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -184,7 +253,29 @@ const styles = {
     fontWeight: 600,
     color: 'var(--text)',
   },
+  pillNeutral: { color: 'var(--muted)' },
   pillGreen: { color: 'var(--emerald)', borderColor: 'rgba(16,185,129,0.3)', background: 'rgba(16,185,129,0.07)' },
+  saveBtn: {
+    background: 'rgba(16,185,129,0.10)',
+    color: '#047857',
+    border: '1px solid rgba(16,185,129,0.45)',
+    borderRadius: 9,
+    padding: '8px 15px',
+    fontSize: 14,
+    fontWeight: 700,
+    fontFamily: 'inherit',
+  },
   runStatus: { fontSize: 13, color: 'var(--muted)', margin: '0 0 14px', fontWeight: 500 },
-  foot: { color: 'var(--muted)', fontSize: 12.5, marginTop: 16, textAlign: 'center' },
+  footRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginTop: 16, flexWrap: 'wrap' },
+  foot: { color: 'var(--muted)', fontSize: 12.5, margin: 0, flex: 1, minWidth: 240 },
+  resetBtn: {
+    background: 'transparent',
+    color: 'var(--muted)',
+    border: '1px solid var(--border)',
+    borderRadius: 8,
+    padding: '6px 12px',
+    fontSize: 12.5,
+    fontWeight: 600,
+    fontFamily: 'inherit',
+  },
 }
