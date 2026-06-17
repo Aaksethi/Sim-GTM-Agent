@@ -138,15 +138,20 @@ function Row({ r, open, onToggle, onRerun, scoring, anyBusy }) {
                 const cell = r.scores[c.key] || { points: 0, max: c.max, why: '' }
                 const frac = c.max ? cell.points / c.max : 0
                 return (
-                  <div key={c.key} style={bRow}>
-                    <div style={bLabel}>{c.label}</div>
-                    <div className="tnum" style={bScore}>
-                      {cell.points}
-                      <span style={{ color: '#a3a3a3', fontWeight: 400 }}>/{c.max}</span>
+                  <div key={c.key}>
+                    <div style={bRow}>
+                      <div style={bLabel}>{c.label}</div>
+                      <div className="tnum" style={bScore}>
+                        {cell.points}
+                        <span style={{ color: '#a3a3a3', fontWeight: 400 }}>/{c.max}</span>
+                      </div>
+                      <div style={bTrack}>
+                        <div style={{ ...bFill, width: `${Math.round(frac * 100)}%`, background: frac >= 0.6 ? AMBER : GRAY_FILL }} />
+                      </div>
                     </div>
-                    <div style={bTrack}>
-                      <div style={{ ...bFill, width: `${Math.round(frac * 100)}%`, background: frac >= 0.6 ? AMBER : GRAY_FILL }} />
-                    </div>
+                    {cell.why ? (
+                      <div style={bWhy} title={cell.why}>{cell.why}</div>
+                    ) : null}
                   </div>
                 )
               })}
@@ -259,6 +264,17 @@ const bLabel = { width: 120, fontSize: 11, color: '#444', flexShrink: 0 }
 const bScore = { width: 42, fontSize: 11, fontWeight: 700, color: '#1a1a1a', flexShrink: 0 }
 const bTrack = { flex: 1, height: 4, background: '#e8e8e5', borderRadius: 99, overflow: 'hidden' }
 const bFill = { height: '100%', borderRadius: 99, transition: 'width 0.4s ease' }
+const bWhy = {
+  fontSize: 11,
+  color: '#737373',
+  lineHeight: 1.5,
+  marginTop: 4,
+  marginBottom: 12,
+  display: '-webkit-box',
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+}
 const emailHead = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }
 const copyBtn = { background: 'var(--accent)', color: '#1a1a1a', border: 'none', borderRadius: 6, padding: '4px 12px', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }
 const emailSubject = { fontWeight: 700, fontSize: 12, color: '#1a1a1a', marginBottom: 8 }
