@@ -182,7 +182,7 @@ export default function App() {
               <img
                 src="/sim-logo.png"
                 alt="Sim"
-                height={26}
+                height={48}
                 style={{ width: 'auto', display: 'block', flexShrink: 0 }}
                 onError={() => setLogoError(true)}
               />
@@ -307,7 +307,7 @@ const styles = {
   },
   brand: { display: 'flex', alignItems: 'center' },
   logoFallback: { color: '#1a1a1a', fontWeight: 700, fontSize: 20, lineHeight: 1 },
-  brandDivider: { width: 1, height: 32, background: '#e5e5e3', flexShrink: 0, marginLeft: 16 },
+  brandDivider: { width: 1, height: 50, background: '#e5e5e3', flexShrink: 0, marginLeft: 16 },
   brandText: { display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingLeft: 16 },
   brandTagline: { fontSize: 15, fontWeight: 500, color: '#1a1a1a', lineHeight: 1.3 },
   brandTrust: { fontSize: 12, color: '#737373', marginTop: 3, lineHeight: 1.3 },
