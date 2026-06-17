@@ -26,7 +26,7 @@ export default function DownloadButton({ results }) {
       row.Tier = r.tier ?? ''
       row.Status = r.status
       row['Score Rationale'] = r.scores
-        ? CATS.map(([key, label]) => `${label}: ${r.scores[key]?.why || '—'}`).join('; ')
+        ? CATS.map(([key, label]) => `${label}: ${r.scores[key]?.why || '-'}`).join('; ')
         : r.error || ''
       row['Email Angle'] = r.email?.angle ?? ''
       row['Email Subject'] = r.email?.subject ?? ''
@@ -35,15 +35,31 @@ export default function DownloadButton({ results }) {
     })
 
     const csv = Papa.unparse(rows)
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    // Prepend a UTF-8 BOM (U+FEFF) so Excel opens it correctly and the special
+    // characters in the rationale/email survive.
+    const blob = new Blob([String.fromCharCode(0xFEFF) + csv], { type: 'text/csv;charset=utf-8;' })
+    const filename = 'sim-icp-accounts.csv'
+
+    // Legacy Edge / IE path.
+    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+      window.navigator.msSaveOrOpenBlob(blob, filename)
+      return
+    }
+
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'sim-icp-accounts.csv'
+    a.download = filename
+    a.rel = 'noopener'
+    a.style.display = 'none'
     document.body.appendChild(a)
     a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+    // Defer cleanup — revoking the blob URL synchronously can cancel the
+    // download on large files, making the browser open it inline as text.
+    setTimeout(() => {
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    }, 1000)
   }
 
   return (
