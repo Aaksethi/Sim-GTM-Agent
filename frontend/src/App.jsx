@@ -146,25 +146,26 @@ export default function App() {
         <header style={styles.header}>
           {/* Left: logo + brand text */}
           <div style={styles.brand}>
-            {logoError ? (
-              <span style={styles.logoFallback}>S</span>
-            ) : (
-              <img
-                src="/sim-logo.png"
-                alt="Sim"
-                height={28}
-                style={{ width: 'auto', display: 'block', flexShrink: 0 }}
-                onError={() => setLogoError(true)}
-              />
-            )}
-            <div style={styles.brandBlock}>
-              <div style={styles.brandName}>sim</div>
-              <div style={styles.brandTagline}>Open-source AI workspace for teams building enterprise agents</div>
-              <div style={styles.brandTrust}>Trusted by 100,000+ developers · SOC2 compliant · 1,000+ integrations</div>
-              <div style={styles.amberRow}>
-                <div style={styles.amberRule} />
-                <div style={styles.contextLine}>Enterprise accounts scored against Sim's ICP · Healthcare &amp; Fintech · run today</div>
+            <div style={styles.brandTop}>
+              {logoError ? (
+                <span style={styles.logoFallback}>S</span>
+              ) : (
+                <img
+                  src="/sim-logo.png"
+                  alt="Sim"
+                  height={46}
+                  style={{ width: 'auto', display: 'block', flexShrink: 0 }}
+                  onError={() => setLogoError(true)}
+                />
+              )}
+              <div style={styles.brandText}>
+                <div style={styles.brandTagline}>Open-source AI workspace for teams building enterprise agents</div>
+                <div style={styles.brandTrust}>Trusted by 100,000+ developers · SOC2 compliant · 1,000+ integrations</div>
               </div>
+            </div>
+            <div style={styles.amberRow}>
+              <div style={styles.amberRule} />
+              <div style={styles.contextLine}>Enterprise accounts scored against Sim's ICP · Healthcare &amp; Fintech · run today</div>
             </div>
           </div>
 
@@ -190,15 +191,6 @@ export default function App() {
                 ⤓ Save snapshot
               </button>
             )}
-            {hasScored && (
-              <button
-                onClick={resetData}
-                disabled={busy}
-                style={{ ...styles.resetBtn, cursor: busy ? 'not-allowed' : 'pointer', opacity: busy ? 0.5 : 1 }}
-              >
-                Reset
-              </button>
-            )}
           </div>
         </div>
 
@@ -221,9 +213,20 @@ export default function App() {
 
         {/* ── Footer ── */}
         <div style={styles.footer}>
-          <span style={styles.footText}>
-            Built by Aakash Sethi · GTM Agent OS · github.com/Aaksethi/gtm-agent-os
-          </span>
+          <div style={styles.footLeft}>
+            <span style={styles.footText}>
+              Built by Aakash Sethi · GTM Agent OS · github.com/Aaksethi/gtm-agent-os
+            </span>
+            {hasScored && (
+              <button
+                onClick={resetData}
+                disabled={busy}
+                style={{ ...styles.resetBtn, cursor: busy ? 'not-allowed' : 'pointer', opacity: busy ? 0.5 : 1 }}
+              >
+                Reset
+              </button>
+            )}
+          </div>
           <RunButton onClick={runPipeline} disabled={busy} isLoading={running} />
         </div>
       </div>
@@ -246,26 +249,26 @@ const styles = {
     marginBottom: 18,
     flexWrap: 'wrap',
   },
-  brand: { display: 'flex', alignItems: 'center', gap: 16 },
-  logoFallback: { color: '#10b981', fontWeight: 800, fontSize: 22, lineHeight: 1 },
-  brandBlock: { display: 'flex', flexDirection: 'column', justifyContent: 'center' },
-  brandName: { fontSize: 22, fontWeight: 600, color: '#1a1a1a', lineHeight: 1, marginBottom: 4 },
-  brandTagline: { fontSize: 14, color: '#737373', lineHeight: 1.4, marginBottom: 2 },
-  brandTrust: { fontSize: 12, color: '#a3a3a3', lineHeight: 1.4 },
-  amberRow: { display: 'flex', alignItems: 'center', gap: 10, marginTop: 10 },
-  amberRule: { width: 32, height: 2, background: '#f59e0b', borderRadius: 99, flexShrink: 0 },
-  contextLine: { fontSize: 12, color: '#a3a3a3' },
+  brand: { display: 'flex', flexDirection: 'column', gap: 13 },
+  brandTop: { display: 'flex', alignItems: 'center', gap: 18 },
+  logoFallback: { color: '#10b981', fontWeight: 800, fontSize: 36, lineHeight: 1 },
+  brandText: { display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 4 },
+  brandTagline: { fontSize: 19, fontWeight: 600, color: '#1a1a1a', lineHeight: 1.25, letterSpacing: '-0.015em' },
+  brandTrust: { fontSize: 14, color: '#737373', lineHeight: 1.3 },
+  amberRow: { display: 'flex', alignItems: 'center', gap: 12 },
+  amberRule: { width: 42, height: 2, background: '#f59e0b', borderRadius: 99, flexShrink: 0 },
+  contextLine: { fontSize: 13.5, color: '#a3a3a3' },
 
   /* Header pills */
   pills: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   pill: {
     display: 'inline-block',
-    padding: '5px 14px',
+    padding: '6px 16px',
     borderRadius: 99,
     background: 'var(--panel)',
     border: '0.5px solid var(--border)',
     boxShadow: 'var(--shadow)',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: 600,
     color: 'var(--text)',
   },
@@ -318,5 +321,6 @@ const styles = {
     marginTop: 20,
     flexWrap: 'wrap',
   },
+  footLeft: { display: 'flex', alignItems: 'center', gap: 14 },
   footText: { color: 'var(--muted)', fontSize: 10 },
 }
