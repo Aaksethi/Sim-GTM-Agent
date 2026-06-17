@@ -1,38 +1,1738 @@
 [
-  { "domain": "signzy.com", "company": "Signzy", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "covergo.com", "company": "CoverGo", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "eltropy.com", "company": "Eltropy", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "synctera.com", "company": "Synctera", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "thunes.com", "company": "Thunes", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "firsthelpfinancial.com", "company": "First Help Financial", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "elliptic.co", "company": "Elliptic", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "bvnk.com", "company": "BVNK", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "paysend.com", "company": "Paysend", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "collective.com", "company": "Collective", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "nydig.com", "company": "NYDIG", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "truepill.com", "company": "Truepill", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "healthverity.com", "company": "HealthVerity", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "staxpayments.com", "company": "Stax Payments", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "totalexpert.com", "company": "Total Expert", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "kyruushealth.com", "company": "Kyruus Health", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "resistant.ai", "company": "Resistant AI", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "practifi.com", "company": "Practifi", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "andros.co", "company": "Andros", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "glooko.com", "company": "Glooko", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "chargeafter.com", "company": "ChargeAfter", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "navabenefits.com", "company": "Nava Benefits", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "taxbit.com", "company": "Taxbit", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "trueaccord.com", "company": "TrueAccord", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "amount.com", "company": "Amount", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "veranahealth.com", "company": "Verana Health", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "parafin.com", "company": "Parafin", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "truv.com", "company": "Truv", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "orum.io", "company": "Orum", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "himarley.com", "company": "Hi Marley", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "corlytics.com", "company": "Corlytics", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "sfox.com", "company": "sFOX", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "cmgx.io", "company": "CMG (Capital Markets Gateway)", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "uplinq.com", "company": "Uplinq", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "complexcaresolutions.com", "company": "ComplexCare Solutions", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" },
-  { "domain": "paycommerce.com", "company": "PayCommerce", "scores": null, "icpScore": null, "tier": null, "email": null, "status": "pending" }
+  {
+    "domain": "signzy.com",
+    "company": "Signzy",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Classified as 'Financial Services' on LinkedIn; core product is KYC/KYB/AML digital banking infrastructure serving 90+ financial institutions globally, including a top-3 US acquiring bank."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "425 employees per LinkedIn headcount data — squarely in the 200–5,000 ICP band."
+      },
+      "compliance": {
+        "points": 15,
+        "max": 20,
+        "why": "Tech stack explicitly lists 'SOC 2' as a detected signal; no HIPAA/HITRUST evidence found given the fintech focus, so SOC2 Type II is the best-supported tier."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Tech stack data confirms 'Azure Active Directory' (Microsoft Entra) in Signzy's stack, hitting the top-tier Okta/Azure AD band."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Open job postings reference Signzy's 'Nebula' no-code AI model builder and describe itself as an 'AI-powered RPA platform'; tech stack flags 'Artificial Intelligence'; active Software Engineer hiring for AI product team of 120+."
+      },
+      "displacement": {
+        "points": 15,
+        "max": 15,
+        "why": "Open job description for Product Support Engineer explicitly requires 'Basic knowledge of n8n workflows & JavaScript for debugging' — n8n is a confirmed tool in their operational stack."
+      },
+      "compliance_hiring": {
+        "points": 5,
+        "max": 10,
+        "why": "Dhwaneet Mishra holds an active 'VP-Legal & Regulatory' role (since July 2022); no open GRC/AI-Governance requisition found in current job postings, so scoring as recently established rather than active new hire."
+      }
+    },
+    "icpScore": 90,
+    "tier": "A",
+    "email": {
+      "subject": "n8n workflows at Signzy",
+      "body": "Saw the L2 support JD calling out n8n workflow debugging as a core requirement — that tells me your team has real automation logic running in production, not just demos. Engineers who build on n8n often hit a ceiling when workflows need to touch regulated data or get audited across financial institution clients. Sim is an open-source AI agent workspace that self-hosts on your own infra, so KYC/KYB pipeline logic and any model decisions stay inside your environment and are fully auditable — your Azure AD SSO plugs in on day one. Would a 30-minute technical walkthrough with our eng team be useful?",
+      "angle": "displacement"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "covergo.com",
+    "company": "CoverGo",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Pure-play insurtech (health, life, P&C) serving AXA, Bupa, Prudential, Blue Cross — squarely in the fintech/insurtech regulated category."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "230 employees (LinkedIn: 201-500), firmly inside the 200-5,000 target band."
+      },
+      "compliance": {
+        "points": 15,
+        "max": 20,
+        "why": "Company description explicitly states ISO 27001 and SOC 2 certified; no HIPAA/HITRUST evidence found, so scored as SOC2 Type II equivalent."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory appears directly in the tech stack enrichment, confirming an Okta/Azure AD IdP is in production."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Active AI hiring ('Senior Full Stack Engineer, AI Builder'; 'AI Product Solutions Director' hired Mar 2025) AND confirmed AI tooling (OpenAI, Anthropic, Google LLMs, AI Agent stack in tech enrichment)."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, LangGraph, or Airflow detected in the tech stack or job descriptions."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "No active GRC, Security Engineer, or AI-Governance roles found in open job listings; open roles are engineering and BA focused."
+      }
+    },
+    "icpScore": 70,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents on your own infra",
+      "body": "Saw that your team is actively shipping AI agent loops across claims and underwriting — the 'Senior Full Stack Engineer, AI Builder' JD makes it clear you're building this seriously, not bolting on a chatbot. The challenge we keep hearing from SOC2-certified insurtechs like CoverGo is that running OpenAI/Anthropic calls through a third-party SaaS layer creates audit headaches when carrier clients ask where PHI touched the wire. Sim is an open-source AI agent workspace that your engineers self-host inside your own AWS environment, so the data never leaves your perimeter and the code is fully auditable. Worth a 20-minute call with whoever owns your agent infra to see if it fits?",
+      "angle": "self-host"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "eltropy.com",
+    "company": "Eltropy",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Explicitly a fintech / financial-services company — self-described as the 'Agentic AI platform for Community Financial Institutions' serving 750+ credit unions and community banks."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "281 employees per LinkedIn headcount data, squarely within the 200–5,000 ICP band."
+      },
+      "compliance": {
+        "points": 8,
+        "max": 20,
+        "why": "Tech stack scan surfaces 'SOC 2' as a detected signal and job descriptions reference NCUA/CFPB compliance requirements, but no public SOC2 Type II attestation confirmed — scored as Type I."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory (Entra) is explicitly listed in the detected tech stack."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Core product is an Agentic AI platform; active open roles include 'Product Manager – AI Agents' and 'Senior Product Manager – AI,' confirming both live AI tooling and active AI hiring."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, or LangGraph detected in the tech stack or job descriptions."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "No active GRC, Security Engineer, or AI-Governance role found in the 10 open jobs returned."
+      }
+    },
+    "icpScore": 63,
+    "tier": "C",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "synctera.com",
+    "company": "Synctera",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Financial Services / fintech BaaS platform — core ICP vertical."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "112 employees (LinkedIn-confirmed); slightly below 200-employee floor but within the 100-200 band."
+      },
+      "compliance": {
+        "points": 15,
+        "max": 20,
+        "why": "Tech stack shows 'Corporate Governance and Regulatory Compliance' signal; open job explicitly references BSA/AML, FinCEN MSB, OFAC, UDAAP, GLBA, and SOC2-adjacent audit readiness — strong SOC2 Type II posture without a direct SOC2 badge found."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory confirmed in tech stack; Auth0 also present."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Active Senior Software Engineer hire explicitly requires shipping 'customer-facing AI features in production'; job description calls out a live 'AI feature that extracts structured signals from unstructured compliance documents' — both AI hiring AND AI tooling signals confirmed."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, LangGraph, or Airflow detected in the tech stack."
+      },
+      "compliance_hiring": {
+        "points": 10,
+        "max": 10,
+        "why": "Active open role: Sr. Compliance Manager, MSB & Program Management (posted June 2026) — live GRC/compliance hire."
+      }
+    },
+    "icpScore": 75,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents on your infra",
+      "body": "Saw your open Sr. Software Engineer role calling out the live AI feature pulling structured signals from compliance docs — that's exactly the kind of production AI work that gets messy when the orchestration layer lives in someone else's cloud. Sim is an open-source AI agent workspace that runs entirely on your own infra (GKE/Cloud Run, which you're already on), so audit trails and data residency stay under your control without a separate vendor review cycle. Given the BSA/AML and FinCEN examination prep work your compliance team is building toward, keeping agent execution air-gapped from third-party SaaS is a straightforward win. Worth a 20-minute call with Ellen or whoever owns your internal tooling?",
+      "angle": "self-host"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "thunes.com",
+    "company": "Thunes",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "LinkedIn industry classification is 'Financial Services'; Thunes is a cross-border payments / fintech infrastructure company serving banks, MTOs, PSPs, and fintechs globally."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "541 employees per LinkedIn headcount data, squarely within the 200–5,000 ICP band."
+      },
+      "compliance": {
+        "points": 8,
+        "max": 20,
+        "why": "Job descriptions reference SOX, GDPR, and an internal 'Fortress Compliance Platform'; the Treasury Analyst role explicitly requires SOX compliance — signals SOC2 Type I posture at minimum, but no public SOC2 Type II or HIPAA/HITRUST certification found."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Tech stack confirms Azure Active Directory (Entra ID) in use, scoring full marks for Okta/Azure AD."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Active MLOps Engineer job posting (LLM observability, Airflow, Langfuse/LangSmith, GPU orchestration) plus Demand Generation Director role citing AI-driven workflows (Gemini, Zapier, Clay) — both active AI hiring AND documented AI tooling."
+      },
+      "displacement": {
+        "points": 15,
+        "max": 15,
+        "why": "Demand Generation Director job description explicitly names Zapier in the current tech stack ('AI and Automation at Scale: leveraging Gemini, PeecAI, Zapier, Clay'), confirming Zapier is in production use."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "No active GRC, Security Engineer, or AI-Governance role found in open jobs; compliance ownership appears embedded in finance/treasury roles rather than a dedicated hire."
+      }
+    },
+    "icpScore": 78,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents on your own infra",
+      "body": "Saw your MLOps Engineer posting — the requirement for self-hosted LLM observability stacks (Langfuse, Phoenix) tells me your team already knows that running agents against payment data means the model infra can't live in someone else's cloud. Sim is an open-source AI agent workspace that engineering teams deploy on their own infrastructure, so transaction data never leaves your environment. It also drops in alongside the Airflow/Kubernetes stack your posting describes, with no re-architecture needed. We're SOC2-ready out of the box with SSO/SCIM if that helps the compliance conversation. Worth a 20-minute call with Guy or whoever owns your AI platform layer?",
+      "angle": "self-host"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "firsthelpfinancial.com",
+    "company": "First Help Financial",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Auto finance / consumer lending is core fintech; LinkedIn industry listed as 'Financial Services'; lender subject to CFPB and state consumer-finance regulations."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "484 employees per LinkedIn headcount, squarely inside the 200–5,000 target band."
+      },
+      "compliance": {
+        "points": 5,
+        "max": 20,
+        "why": "Dedicated VP Compliance (CRCM-certified), Compliance Team Lead, Compliance Auditor, and QA Compliance Specialist found; NMLS-licensed lender; no public SOC2 certification confirmed, so scored as compliance-function-only."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Both Okta and Azure Active Directory (Entra) appear explicitly in the enriched tech stack."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Active AI hiring across multiple open roles (Senior Data Scientist Risk Analytics, ML Engineer, AI/LLM Systems SWE) AND a newly hired Director of Risk Analytics, AI & Data (Kelvin Nham, Mar 2026), satisfying both the hiring and tooling/team signals."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "Tech stack shows no n8n, Zapier, Make, LangChain, LangGraph, or Airflow signals."
+      },
+      "compliance_hiring": {
+        "points": 10,
+        "max": 10,
+        "why": "Kelvin Nham (Director of Risk Analytics, AI & Data) started Mar 2026 and an AI/LLM Systems Senior SWE joined Mar 2025 — active, recent AI-governance and risk-analytics hiring meeting the 'active GRC/Security/AI-Governance hire' criterion."
+      }
+    },
+    "icpScore": 70,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents + auto lending compliance",
+      "body": "Saw that FHF brought on Kelvin Nham as Director of Risk Analytics, AI & Data earlier this year — that kind of hire usually means ML models are moving closer to production credit decisions, which is exactly where auditability pressure gets real. We built Sim (sim.ai) as an open-source AI agent workspace: every workflow is code-auditable, runs on your own infra, and the decision logic sits in your environment rather than a third-party SaaS. For a lender under CFPB and state consumer-finance rules, having a full audit trail of how an agent reached a recommendation matters — and we think the self-hosted model is the only clean answer to that. Would you be open to a 20-minute call with your engineering or risk-data team to walk through how a couple of your current pipelines might look in Sim?",
+      "angle": "ai-governance"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "elliptic.co",
+    "company": "Elliptic",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "LinkedIn industry is Financial Services; core product is AML/compliance software for crypto exchanges, banks, and federal agencies — squarely fintech."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "252 employees per LinkedIn headcount data, well within the 200–5,000 ICP band."
+      },
+      "compliance": {
+        "points": 5,
+        "max": 20,
+        "why": "No explicit SOC2, HIPAA, or HITRUST badge surfaced in tech stack or job descriptions; enrichment shows an 'Anti Money Laundering Policy' tag and FDIC signal, indicating compliance posture but no certified framework confirmed."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Tech stack explicitly lists 'Azure Active Directory' (Microsoft Entra ID), confirming Okta/Azure-tier IdP."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Tech stack contains both 'OpenAI' and 'LangChain'; every active engineering job listing explicitly requires 'AI fluency' and 'agentic workflows' — both hiring and tooling signals confirmed."
+      },
+      "displacement": {
+        "points": 10,
+        "max": 15,
+        "why": "Tech stack explicitly includes 'LangChain' — LangChain/LangGraph present in production stack, qualifying for the LangChain-only displacement band."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "No active GRC, Security, or AI-Governance open requisition found across the 10 current job listings; existing policy/regulatory roles are long-tenured, not new hires."
+      }
+    },
+    "icpScore": 70,
+    "tier": "B",
+    "email": {
+      "subject": "LangChain agents at Elliptic",
+      "body": "Saw LangChain in Elliptic's stack alongside the job listings calling out agentic workflows for your real-time risk and investigations platform — that's a lot of custom glue code to keep reliable at 1,000s of QPS. Sim is an open-source agent workspace that replaces the LangChain orchestration layer with a visual, self-hostable runtime your team can audit and deploy on your own infra. A few fintech teams have used it to cut the gap between prototype and production from weeks to days, without handing transaction data to a third-party SaaS. Happy to show you a 20-minute demo with one of your existing workflows — would that be worth the time?",
+      "angle": "displacement"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "bvnk.com",
+    "company": "BVNK",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Core fintech: stablecoin payment infrastructure for enterprise clients (Worldpay, Deel, Rapyd); regulated as EMI/VASP across multiple jurisdictions."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "441 employees, firmly inside the 200–5,000 target band."
+      },
+      "compliance": {
+        "points": 15,
+        "max": 20,
+        "why": "SOC 2 tag and Vanta detected in tech stack; job specs cite PCI-DSS, MiCA safekeeping, EMI client-money rules, and KYC/AML — consistent with SOC2 Type II posture."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Both Okta and Azure Active Directory confirmed in tech stack enrichment."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Multiple open JDs mandate daily Claude Code use and 'AI-first' workflow; design system role explicitly scopes AI-consumable component architecture — active AI tooling adoption confirmed."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, or LangGraph detected in enriched tech stack."
+      },
+      "compliance_hiring": {
+        "points": 10,
+        "max": 10,
+        "why": "Currently open roles: Senior Compliance Onboarding Analyst (KYC/AML) and Tech Lead: Fraud (FinCrime domain) — active GRC/compliance hiring in progress."
+      }
+    },
+    "icpScore": 80,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents on your infra",
+      "body": "Saw the Lead Product Designer JD calling out AI-consumable design systems and Claude Code as a daily tool — you're clearly building AI into the engineering workflow, not bolting it on. As you expand that footprint into agent-based automation, the question of where agent logic runs and who can audit it tends to surface fast, especially under MiCA and EMI safeguarding requirements. Sim is an open-source AI agent workspace that runs entirely on your own infrastructure — no data leaves your environment, and the workflow graph is fully auditable by your compliance and engineering teams. Would it be worth a 20-minute call with whoever is thinking about agent governance at BVNK?",
+      "angle": "self-host"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "paysend.com",
+    "company": "Paysend",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Fintech/financial services — FCA-regulated cross-border payments MSB operating in 170+ countries with BSA/AML obligations."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "376 employees per LinkedIn headcount, comfortably within the 200–5,000 ICP band."
+      },
+      "compliance": {
+        "points": 8,
+        "max": 20,
+        "why": "OneTrust detected in tech stack and heavy compliance org (CCO, MLRO, CRO, AML team) signals compliance investment, but no confirmed SOC2 certificate found — scoring as SOC2 Type I equivalent evidence."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Microsoft Azure DNS and Office 365/Exchange Online confirmed in tech stack, indicating Azure AD/Entra as the IdP."
+      },
+      "ai_footprint": {
+        "points": 8,
+        "max": 15,
+        "why": "\"AI Generated Copy\" technology detected in stack and a dedicated Automation & Efficiency engineering team building fraud-monitoring automation, but no explicit AI/ML job postings or public AI blog found."
+      },
+      "displacement": {
+        "points": 15,
+        "max": 15,
+        "why": "Make (formerly Integromat) explicitly confirmed in the tech stack, a direct displacement target for Sim."
+      },
+      "compliance_hiring": {
+        "points": 10,
+        "max": 10,
+        "why": "Active open role for Senior Compliance Analyst – North America (posted June 2026) plus a Security GRC Analyst who joined April 2026 and an Information Security GRC Lead hired Sept 2024."
+      }
+    },
+    "icpScore": 81,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents on your infra",
+      "body": "Saw that Paysend runs Make for workflow automation while also operating under FCA, BSA/AML, and multi-jurisdictional payment licensing — a combination that makes it genuinely hard to let agent workflows touch a SaaS vendor's servers. Sim is an open-source AI agent workspace that self-hosts entirely on your own infrastructure, so transaction data and compliance logic never leave your environment. We integrate with your existing Azure AD setup and are built for teams that need full auditability across every agent run. Would a 30-minute call with one of our engineers be worth your time?",
+      "angle": "self-host"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "collective.com",
+    "company": "Collective",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "LinkedIn industry is 'Financial Services'; core product is fintech platform for taxes, payroll, bookkeeping, and S-Corp formation — clear fintech ICP."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "303 employees per LinkedIn headcount data, squarely within the 200–5,000 target band."
+      },
+      "compliance": {
+        "points": 5,
+        "max": 20,
+        "why": "Staff Security Engineer JD references CCPA, OAuth/OIDC/SAML, and sensitive financial data handling, but no explicit SOC2 Type I/II or HIPAA certification found — security posture signals only."
+      },
+      "idp_sso": {
+        "points": 5,
+        "max": 10,
+        "why": "Security Engineer JD requires expertise in OAuth 2.0, OIDC, and SAML protocols, but no named IdP vendor (Okta, Azure AD, etc.) confirmed in tech stack or job descriptions."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Active hiring for 'Senior PM Applied AI' and 'Product Lead Core Platform & AI'; multiple JDs explicitly require LLM/agentic systems experience and daily AI copilot/agent workflow use — both hiring and tooling signals confirmed."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, or LangGraph found in tech stack or job descriptions; low-code tools mentioned are Bolt, Retool, AppSheet, and Claude Code."
+      },
+      "compliance_hiring": {
+        "points": 10,
+        "max": 10,
+        "why": "Active open 'Staff Security Engineer' role (posted June 2026) covering CCPA compliance, auth architecture, SAST/DAST, and security for AI agent workflows — strong active GRC/Security hire signal."
+      }
+    },
+    "icpScore": 65,
+    "tier": "C",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "nydig.com",
+    "company": "NYDIG",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Financial Services — Bitcoin financial infrastructure regulated under FINRA, FDIC, and SIPC; core fintech/financial services ICP."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "194 employees per LinkedIn headcount data — just below the 200-5,000 band, falling in the 100-200 slightly-outside range."
+      },
+      "compliance": {
+        "points": 5,
+        "max": 20,
+        "why": "Strong security tooling (DMARC Quarantine, DigiCert, HSTS, Valimail, WebAuthn, dedicated CISO + Deputy CISO) but no explicit SOC2 Type I/II, HIPAA, or HITRUST certification signal detected — scored as trust-platform-adjacent."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Both Okta and Azure Active Directory confirmed in the enriched tech stack."
+      },
+      "ai_footprint": {
+        "points": 8,
+        "max": 15,
+        "why": "OpenAI detected in tech stack; zero open jobs returned so no active AI hiring signal to confirm the second data point."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, or LangGraph found anywhere in the enriched tech stack."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "Open Jobs enrichment returned 0 listings — no active GRC, Security, or AI-Governance roles detected."
+      }
+    },
+    "icpScore": 48,
+    "tier": "Disqualify",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "truepill.com",
+    "company": "Truepill",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "LinkedIn industry is 'Hospitals and Health Care'; Truepill is a B2B digital pharmacy platform handling prescriptions and patient data — core healthcare vertical."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "Current headcount is 330 employees (LinkedIn band 501–1,000 reflects older peak), squarely within the 200–5,000 ICP range."
+      },
+      "compliance": {
+        "points": 20,
+        "max": 20,
+        "why": "URAC-accredited nationwide prescription fulfillment means HIPAA is mandatory; handles PHI at scale with an active VP of Privacy and Compliance hired May 2024."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory (Entra ID) explicitly detected in tech stack enrichment."
+      },
+      "ai_footprint": {
+        "points": 0,
+        "max": 15,
+        "why": "Zero open job listings returned and no AI/ML tooling (LLM frameworks, vector DBs, AI platforms) detected in the tech stack."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, or LangGraph detected in the tech stack; Salesforce is present but is a CRM, not a workflow-automation displacement target."
+      },
+      "compliance_hiring": {
+        "points": 5,
+        "max": 10,
+        "why": "Carlos Cruz joined as VP, Privacy and Compliance in May 2024 (~14 months ago) — role is filled and recently closed, outside the active 90-day hiring window."
+      }
+    },
+    "icpScore": 65,
+    "tier": "C",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "healthverity.com",
+    "company": "HealthVerity",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Core business is HIPAA-compliant real-world healthcare data exchange across 340M US patients — direct healthcare/health-tech."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "255 employees per LinkedIn headcount data — squarely within the 200–5,000 ICP band."
+      },
+      "compliance": {
+        "points": 20,
+        "max": 20,
+        "why": "LinkedIn description and job postings explicitly cite HIPAA compliance, de-identification standards (Safe Harbor/Expert Determination), and FedRAMP familiarity; dedicated compliance team includes Head of Security, Cybersecurity Compliance Program Manager, Senior Director Quality & Compliance, and Privacy Engineer."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Tech stack confirms both Okta and Azure Active Directory (Entra) in production."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Active AI hiring (Sr AI Solutions Specialist, Lead Data Analyst AI/RWE, SVP Product role requiring agentic workflow and LLM experience) AND AI tooling stack confirmed: Databricks, Apache Spark, Apache Airflow, OpenAI, Google BigQuery, Snowflake."
+      },
+      "displacement": {
+        "points": 10,
+        "max": 15,
+        "why": "Apache Airflow confirmed in tech stack (workflow orchestration); SVP Product JD calls for 'agentic workflows' built on LLM pipelines — LangChain-tier orchestration signal, no n8n/Zapier/Make detected."
+      },
+      "compliance_hiring": {
+        "points": 10,
+        "max": 10,
+        "why": "Multiple active GRC hires confirmed: Cybersecurity Compliance Program Manager (posted May 2026), Manager Compliance and Risk (current), Director of Government Compliance & Contracts (current)."
+      }
+    },
+    "icpScore": 95,
+    "tier": "A",
+    "email": {
+      "subject": "AI agents on your infra",
+      "body": "Saw the SVP Product role calling for agentic workflows with privacy preservation and human-in-the-loop design across your 250B-transaction HIPAA environment — that's a hard combination to get right with cloud-hosted tooling. Sim is an open-source AI agent workspace that runs entirely on your own AWS infrastructure, so PHI never leaves your environment and every workflow is auditable line-by-line. We're seeing teams replace Airflow-based orchestration with Sim for the agent layer specifically because the self-hosted model maps cleanly onto existing BAA and data-use-agreement boundaries. Worth a 20-minute call with your CTO or Chief Data Scientist to see if the architecture fits?",
+      "angle": "self-host"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "staxpayments.com",
+    "company": "Stax Payments",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Financial Services / fintech payments processor — direct ICP match."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "297 employees, squarely within the 200–5,000 target band."
+      },
+      "compliance": {
+        "points": 8,
+        "max": 20,
+        "why": "OneTrust, Zero Trust, OWASP, KnowBe4, and PCI-DSS obligations evident; no explicit SOC2 Type II confirmation found — scored as trust-platform/Type I band."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory (Entra) confirmed in tech stack."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Anthropic and Google Gemini both detected in tech stack, and a Chief AI Officer (Mark Sundt) was hired March 2026."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, or LangGraph detected in the tech stack."
+      },
+      "compliance_hiring": {
+        "points": 10,
+        "max": 10,
+        "why": "Chief AI Officer hired March 2026 and VP of Security hired February 2026 — active AI governance and security leadership build-out."
+      }
+    },
+    "icpScore": 73,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents on your infra",
+      "body": "Saw that Stax brought on a Chief AI Officer in March — and you're already running Anthropic and Gemini in your stack, so the agent work is clearly underway. When payments teams start wiring agents into core flows, the question that tends to come up fast is where the models actually run and who can audit the outputs. Sim is an open-source AI agent workspace that self-hosts on your own infra, so cardholder data never leaves your environment and every workflow is fully auditable by your security team. It also ships with SSO/SCIM, which plays nicely with the Entra setup you already have. Would it be worth a 20-minute call with your engineering lead to walk through how a couple of teams are using it in production?",
+      "angle": "ai-governance"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "totalexpert.com",
+    "company": "Total Expert",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Explicitly financial services — platform serves banks, lenders, credit unions, and insurance companies; LinkedIn industry field is 'Financial Services'."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "247 employees per LinkedIn headcount data, squarely within the 200–5,000 ICP band."
+      },
+      "compliance": {
+        "points": 8,
+        "max": 20,
+        "why": "No SOC2 Type II badge found; however, the platform explicitly markets 'compliance solutions' for regulated financial enterprises and employs dedicated Security & Compliance Analysts, indicating compliance awareness but unconfirmed external certification."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Okta confirmed in tech stack enrichment; Azure Active Directory also detected as a secondary signal."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Tech stack shows OpenAI and 'AI Agent' tags; job descriptions explicitly reposition the platform as a 'Customer Operating System' where 'humans and AI Agents engage in moments that matter' — active AI product investment and tooling confirmed."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, or LangGraph detected in the tech stack; workflow automation signals absent."
+      },
+      "compliance_hiring": {
+        "points": 5,
+        "max": 10,
+        "why": "Mark Hanowski joined as Senior Security Risk & Compliance Analyst in April 2025 (~2 months ago), qualifying as a recently closed (<90 days) compliance hire."
+      }
+    },
+    "icpScore": 68,
+    "tier": "C",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "kyruushealth.com",
+    "company": "Kyruus Health",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "LinkedIn industry = 'Hospitals and Health Care'; self-described as the industry's largest care access platform connecting patients to providers."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "215 employees confirmed via LinkedIn headcount data — squarely within the 200–5,000 ICP band."
+      },
+      "compliance": {
+        "points": 20,
+        "max": 20,
+        "why": "Healthcare care-access platform is HIPAA-obligated by nature; General Counsel & Chief Compliance Officer (Soojin Chung) on staff since 2020; OWASP, DMARC, HSTS, reCAPTCHA Enterprise all present in tech stack."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory (Entra) confirmed in enriched tech stack."
+      },
+      "ai_footprint": {
+        "points": 8,
+        "max": 15,
+        "why": "Tech stack flags 'Artificial Intelligence' and 'AI Generated Copy' signals; heavy ML/data infra (Databricks, Apache Spark, Google BigQuery, Snowflake, Elasticsearch) — one clear signal set but no active AI job postings (0 open roles returned)."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, or LangGraph detected anywhere in the enriched tech stack."
+      },
+      "compliance_hiring": {
+        "points": 5,
+        "max": 10,
+        "why": "CCO role held by Soojin Chung (tenured since 2020); no active GRC, Security, or AI-Governance open roles returned from job scan."
+      }
+    },
+    "icpScore": 73,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents on your infra",
+      "body": "Robert — saw that Kyruus runs a Databricks + Snowflake stack and has a Chief Compliance Officer embedded in engineering decisions, which makes sense given the PHI your care-access platform touches. We built Sim (sim.ai) as an open-source AI agent workspace that self-hosts entirely on your existing cloud infra, so patient-linked data never transits a third-party vendor. Engineers define, deploy, and version agents in code the same way they manage the rest of your stack — no black-box SaaS in the middle. Happy to share a quick architecture diagram if it's worth 20 minutes with your team.",
+      "angle": "self-host"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "resistant.ai",
+    "company": "Resistant AI",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "LinkedIn industry is 'Financial Services'; core product is AI fraud detection for banks, lenders, fintechs, and insurers (KYC/KYB, AML, document forensics)."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "161 employees (LinkedIn headcount) — slightly outside the 200–5,000 ICP band, falling in the 100–200 range."
+      },
+      "compliance": {
+        "points": 8,
+        "max": 20,
+        "why": "Tech stack scan detects 'SOC 2' as a website-listed technology/badge; no confirmed SOC 2 Type II attestation found, scored as Type I signal."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Tech stack explicitly lists both Okta and Azure Active Directory as confirmed stack technologies."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "AI is the core product (500+ ML detectors, 170M docs analyzed, Head of ML Operations role); active engineering hiring for Python/ML backend and Fraud & Data Analyst with ML skills."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, or LangGraph detected in the tech stack; OpenAI API is present but does not qualify under any displacement signal."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "Open roles are IT Specialist, Software Engineers, and TAMs — no explicit GRC, Security Compliance, or AI-Governance title found in current job postings."
+      }
+    },
+    "icpScore": 58,
+    "tier": "C",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "practifi.com",
+    "company": "Practifi",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Explicitly Financial Services — a Salesforce-native CRM purpose-built for wealth management advisory firms, squarely fintech/financial services."
+      },
+      "size": {
+        "points": 0,
+        "max": 10,
+        "why": "LinkedIn-confirmed headcount of 68 employees, well below the 100-employee floor of the ICP band."
+      },
+      "compliance": {
+        "points": 5,
+        "max": 20,
+        "why": "No SOC2 certificate or HIPAA signal detected in tech stack or public pages; compliance is a product feature they sell to customers (Vanta/Drata/SafeBase not found), so scored as trust-platform-only equivalent."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory (Entra ID) explicitly present in enriched tech stack."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Company description touts 'native AI functionality' as a core product pillar, open job listing calls out monthly Power Sessions on 'AI features', and 'Artificial Intelligence' is a detected tech stack signal — both AI hiring signals and active AI tooling confirmed."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "Tech stack shows Salesforce, HubSpot, Zendesk, and Slack — no n8n, Zapier, Make, LangChain, or LangGraph signals detected."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "Only active open role is a Training Consultant; no GRC, Security Engineering, or AI-Governance hiring signals found."
+      }
+    },
+    "icpScore": 50,
+    "tier": "C",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "andros.co",
+    "company": "Andros",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "LinkedIn industry is 'Hospitals and Health Care'; company description explicitly states they serve health plans and provider networks."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "LinkedIn headcount band is 51–200 and enriched employee_count is 108 — slightly below the 200-employee floor of the ideal range."
+      },
+      "compliance": {
+        "points": 5,
+        "max": 20,
+        "why": "No HIPAA, HITRUST, or SOC2 certification detected in open jobs or tech stack; only a trust-signal tool (StatusPage IO) appeared in the stack."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory (Entra) confirmed in tech stack enrichment — qualifies for full IdP/SSO points."
+      },
+      "ai_footprint": {
+        "points": 8,
+        "max": 15,
+        "why": "OpenAI detected in tech stack and 'AI Generated Copy' tag present, but no active AI engineering job postings found to confirm the second signal."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, LangGraph, or Airflow detected in the tech stack enrichment."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "Open Jobs returned zero listings; no active GRC, Security, or AI-Governance roles found."
+      }
+    },
+    "icpScore": 48,
+    "tier": "Disqualify",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "glooko.com",
+    "company": "Glooko",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Digital health / Hospitals and Health Care — FDA-cleared HIPAA-compliant diabetes management platform handling PHI across 4.4M patients and health systems."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "237 employees — squarely within the 200–5,000 target band."
+      },
+      "compliance": {
+        "points": 20,
+        "max": 20,
+        "why": "Open job posting explicitly states 'FDA cleared, HIPAA compliant' platform; patient data flows through inpatient (EndoTool) and outpatient products."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Both Okta and Azure Active Directory confirmed in tech stack fingerprint."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Active ML/AI headcount: Senior Director of Data & Machine Learning Products, two Senior Data Scientists, Data Scientist, Senior Data Engineer — plus 'Artificial Intelligence' tag in tech stack."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, or LangGraph detected in tech stack or job postings."
+      },
+      "compliance_hiring": {
+        "points": 5,
+        "max": 10,
+        "why": "No open GRC/AI-governance req, but a Senior SecITOps Engineer was hired within the last 6 months (Ibrahim A., start date 2025-12), signalling recent security investment."
+      }
+    },
+    "icpScore": 80,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents + HIPAA data",
+      "body": "Glooko's EndoTool and population tracker sit on top of some of the most sensitive glycemic data in clinical care — the kind that can't leave your infra without a compliance conversation. We built Sim (sim.ai) as a self-hostable, open-source AI agent workspace so engineering teams like yours can wire up ML pipelines and LLM workflows without PHI ever touching a third-party server. The whole codebase is auditable on GitHub, and it ships with SSO/SCIM out of the box for Okta. Would it be worth a 20-minute call with your CTO Prakash to see if it fits how your data science team is building today?",
+      "angle": "self-host"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "chargeafter.com",
+    "company": "ChargeAfter",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Classified as Financial Services on LinkedIn; core product is an embedded lending/consumer-financing network for merchants and financial institutions — squarely fintech."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "98 employees per LinkedIn headcount data — slightly below the 200-employee floor of the ideal 200-5,000 band, landing in the 'slightly outside' 100-200 bucket."
+      },
+      "compliance": {
+        "points": 5,
+        "max": 20,
+        "why": "Tech stack shows OneTrust/Optanon, CookiePro, GDPR CMP, DMARC, HSTS, SPF — consent/privacy tooling only; no SOC2, HIPAA, or HITRUST signal found."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory explicitly present in the enriched tech stack, confirming Entra/Azure AD as the identity provider."
+      },
+      "ai_footprint": {
+        "points": 8,
+        "max": 15,
+        "why": "Tech stack includes an 'Artificial Intelligence' tag and the platform description references a 'data-driven matching engine,' but no active AI engineering roles or dedicated AI blog posts were found — one signal only."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, LangGraph, or Airflow detected anywhere in the enriched tech stack or job descriptions."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "Active open roles are Sales Engineer and Project Manager only — no GRC, Security, or AI-Governance hiring signal found."
+      }
+    },
+    "icpScore": 48,
+    "tier": "Disqualify",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "navabenefits.com",
+    "company": "Nava Benefits",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Health-tech / insurtech brokerage on a stated mission to fix healthcare, processing benefits data for 70K+ covered employees — squarely in the healthcare-adjacent regulated ICP."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "144 employees (LinkedIn confirmed) — slightly below the 200-floor, landing in the 100–200 'slightly outside' band."
+      },
+      "compliance": {
+        "points": 15,
+        "max": 20,
+        "why": "Tech stack fingerprint explicitly returns 'SOC 2' as a detected signal; exact type (I vs II) unconfirmed so scored at SOC2 Type II band."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Tech stack shows 'Azure Active Directory' (Entra) as a confirmed signal alongside Auth0."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Three active AI Engineer roles (two Senior AI Engineers, one AI Engineer) plus tech stack confirms Anthropic, OpenAI Operations, Google Gemini, PyTorch, and SCIKit Learn — both hiring and tooling signals present."
+      },
+      "displacement": {
+        "points": 15,
+        "max": 15,
+        "why": "Tech stack explicitly lists Zapier as a detected tool, alongside Dagster and Airbyte for data orchestration."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "No active open GRC, Security, or AI-Governance role found in current job listings; existing Compliance Ops Specialist hire (Tia Marx) is from 2023, outside the recency window."
+      }
+    },
+    "icpScore": 80,
+    "tier": "B",
+    "email": {
+      "subject": "Zapier + PHI data don't mix",
+      "body": "Saw that Nava's HQ platform is running Anthropic and OpenAI under the hood while Zapier is still in the stack — that's a rough combination once a client starts asking where their members' benefits data flows. Sim is an open-source AI agent workspace that runs entirely on your own infra, so PHI never leaves Nava's environment and every workflow is auditable by your engineers. Pat and the eng team can self-host it in an afternoon; SOC 2 controls and SSO via Azure AD wire up without custom plumbing. Would a 20-minute call with our eng team be worth it before your next open-enrollment cycle ramps up?",
+      "angle": "displacement"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "taxbit.com",
+    "company": "Taxbit",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "LinkedIn-classified Financial Services; self-described as the leading platform for digital asset tax compliance serving fintechs, crypto brokers, and financial institutions — core fintech/financial services ICP."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "142 employees per LinkedIn headcount data — slightly outside the 200-5,000 band, falling in the 100-200 borderline range."
+      },
+      "compliance": {
+        "points": 15,
+        "max": 20,
+        "why": "Tech stack returns an explicit 'SOC 2' signal; job descriptions repeatedly reference 'audit-ready compliance'; company positions itself as a compliance infrastructure provider — strong SOC2 posture, though Type II not explicitly confirmed."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Tech stack data explicitly lists both Okta and Azure Active Directory (Entra) — dual IdP presence confirmed."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Every open job listing mandates 'proven track record of building, testing, and scaling AI-powered solutions'; company core positioning is 'AI-enabled platform' — active AI hiring AND product-level AI tooling both confirmed."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, or LangGraph found in the tech stack or job descriptions."
+      },
+      "compliance_hiring": {
+        "points": 5,
+        "max": 10,
+        "why": "Active Cloud Security Engineer open role focused on AWS security posture, DevSecOps, and threat modeling — security hiring confirmed but no explicit GRC or AI-Governance title found."
+      }
+    },
+    "icpScore": 70,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents on your infra",
+      "body": "Saw that Taxbit embeds an AI-forward requirement into every engineering and tax role right now — that's a meaningful architectural bet. When teams at compliance-first fintechs start orchestrating agents at that scale, data residency questions come up fast. Sim is an open-source AI agent workspace that runs entirely on your own AWS infrastructure, so transaction data and model inputs never leave your environment. The codebase is fully auditable and ships with SSO/SCIM out of the box, which tends to matter when your customers are crypto brokers and government agencies doing audit-ready reporting. Would it be worth a 20-minute call with whoever owns your internal AI tooling decisions?",
+      "angle": "ai-governance"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "trueaccord.com",
+    "company": "TrueAccord",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Core business is digital debt collection for financial institutions — squarely fintech/financial services."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "LinkedIn band is '201-500' but actual headcount enrichment shows 149 employees, placing them just below the 200 floor."
+      },
+      "compliance": {
+        "points": 8,
+        "max": 20,
+        "why": "No explicit SOC2 certificate detected, but they operate under FDCPA/CFPB regulatory scrutiny and carry enterprise IAM (Okta + Azure AD), suggesting a compliance program in-progress — scored as SOC2 Type I equivalent signal."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Both Okta AND Azure Active Directory (Entra) detected in the tech stack."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Parent entity is literally named TrueML; company self-describes as a 'machine learning platform'; 'Artificial Intelligence' and 'AI Generated Copy' signals in tech stack; active Data Scientist on staff."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, or LangGraph detected in the enriched tech stack."
+      },
+      "compliance_hiring": {
+        "points": 10,
+        "max": 10,
+        "why": "Three active compliance hires found: General Counsel & CCO (May 2024), Director Risk & Control / Deputy Chief of Compliance (Feb 2026), and Internal Compliance Lead (Feb 2026)."
+      }
+    },
+    "icpScore": 68,
+    "tier": "C",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "amount.com",
+    "company": "Amount",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Amount operates squarely in Financial Services / Fintech, building digital lending and deposit origination infrastructure for banks and credit unions."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "187 employees — just below the 200–5,000 ICP band, landing in the 100–200 slightly-outside tier."
+      },
+      "compliance": {
+        "points": 5,
+        "max": 20,
+        "why": "No SOC2 or HIPAA certification explicitly surfaced; stack shows DMARC Quarantine, DNSSEC, HSTS IncludeSubdomains PreLoad, and DigiCert SSL, with compliance positioned as a core product feature — consistent with a trust-platform-level posture."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Both Okta and Azure Active Directory (Entra) confirmed in tech stack enrichment."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "VP of Applied AI on staff, active Senior AI Software Engineer job posting referencing OpenAI/Claude/LangChain, and Anthropic + OpenAI + LangChain all detected in tech stack."
+      },
+      "displacement": {
+        "points": 10,
+        "max": 15,
+        "why": "LangChain confirmed in tech stack; Senior AI Software Engineer JD explicitly lists LangChain and Temporal as required experience — no n8n/Zapier/Make detected."
+      },
+      "compliance_hiring": {
+        "points": 5,
+        "max": 10,
+        "why": "Senior Information Security Analyst (Peter Faltas) started February 2026 — within 90 days of a recent close; active security analyst headcount visible."
+      }
+    },
+    "icpScore": 70,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents on your LangChain stack",
+      "body": "Saw that Amount's AI Pathfinder team is building on LangChain + Temporal with a Senior AI Engineer hire specifically for that stack — that's almost exactly the setup teams come to Sim from. Sim is an open-source agent workspace that replaces raw LangChain orchestration with a visual builder, execution logs, and version-controlled workflows your whole team can audit. Since it self-hosts on your own AWS infra, your financial-institution clients' data never touches a third-party SaaS. Happy to share how a similar fintech infra team migrated their agentic pipelines over in a weekend — worth a 20-minute look?",
+      "angle": "displacement"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "veranahealth.com",
+    "company": "Verana Health",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Digital health company in 'Hospitals and Health Care'; processes real-world patient data (PHI) across oncology, ophthalmology, neurology, and urology for clinical research."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "181 employees — slightly below the 200–5,000 ICP floor, falling in the 100–200 band."
+      },
+      "compliance": {
+        "points": 20,
+        "max": 20,
+        "why": "Handles PHI/real-world patient data; Paubox (HIPAA-compliant email) confirmed in tech stack; dedicated VP of Security, Compliance & IT (Nick Macias) and Sr. Director of Quality & Compliance (Krista Killeen) on staff."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Both Okta and Azure Active Directory confirmed in tech stack enrichment."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Active ML/AI hiring (Senior ML Engineer, ML Engineer, Quantitative Scientist AI/NLP role); 'Artificial Intelligence', 'AI Agent', and 'Databricks' signals in tech stack; company description explicitly calls out AI as core to their platform."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, or LangChain/LangGraph detected in tech stack or job listings."
+      },
+      "compliance_hiring": {
+        "points": 10,
+        "max": 10,
+        "why": "Krista Killeen joined as Senior Director, Quality and Compliance (start 2026-01); Nick Macias active as VP Security, Compliance & IT — compliance function is actively staffed and growing."
+      }
+    },
+    "icpScore": 80,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents on your infra",
+      "body": "Verana's platform sits on top of some of the most sensitive real-world patient datasets in oncology and ophthalmology — the kind where data leaving your environment is a non-starter. We built Sim (sim.ai) as a self-hostable, open-source AI agent workspace so teams like yours can build and orchestrate agents entirely within your own AWS environment, with nothing phoning home. It's SOC2-ready and works with Okta out of the box, which you're already running. Given you have a Senior ML Engineer and an AI/NLP Quantitative Scientist already building on this stuff, I figured it might be worth a look — happy to send a self-hosted docker-compose setup you can spin up in 10 minutes and poke at.",
+      "angle": "self-host"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "parafin.com",
+    "company": "Parafin",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "LinkedIn industry is explicitly 'Financial Services'; Parafin provides embedded lending infrastructure (capital, spend management, savings) to marketplaces and vertical SaaS — core fintech."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "147 employees — just below the 200-employee floor of the ideal 200-5,000 band, placing it in the slightly-outside (100-200) tier."
+      },
+      "compliance": {
+        "points": 8,
+        "max": 20,
+        "why": "Active Compliance Managers on staff (Nisha Mistry, Andrew Scott) and a Staff Security Infrastructure Engineer hired Dec 2025, indicating a maturing compliance program, but no public SOC2 Type II or HIPAA/HITRUST certification was surfaced."
+      },
+      "idp_sso": {
+        "points": 0,
+        "max": 10,
+        "why": "Tech Stack enrichment did not complete in time; no Okta, Azure AD, or other IdP signals found in available data."
+      },
+      "ai_footprint": {
+        "points": 8,
+        "max": 15,
+        "why": "Active Applied AI Engineer hire (Edwin Luo, joined Jun 2025) and multiple Data Scientists including a Senior Staff Data Scientist for Underwriting, signaling AI investment; no public AI blog/tooling post confirmed."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, or Airflow signals found in tech stack or job postings from available data."
+      },
+      "compliance_hiring": {
+        "points": 10,
+        "max": 10,
+        "why": "Two active Compliance Managers (Nisha Mistry Oct 2024, Andrew Scott Apr 2026) and a Staff Security Infrastructure Engineer (Dec 2025) confirm active GRC/Security hiring within the last 90 days."
+      }
+    },
+    "icpScore": 51,
+    "tier": "C",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "truv.com",
+    "company": "Truv",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Core fintech: consumer-permissioned income/employment verification platform serving mortgage lenders, banks, and credit unions — squarely financial services."
+      },
+      "size": {
+        "points": 0,
+        "max": 10,
+        "why": "74 employees per LinkedIn headcount data, well below the 200-employee ICP floor."
+      },
+      "compliance": {
+        "points": 5,
+        "max": 20,
+        "why": "Vanta detected in tech stack (trust platform only); no SOC2 Type I/II or HIPAA certification explicitly confirmed in enriched data."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory confirmed in tech stack, plus Auth0 — strong IdP/SSO signal meeting the Okta/Azure AD criterion."
+      },
+      "ai_footprint": {
+        "points": 8,
+        "max": 15,
+        "why": "Active hiring for ML/AI roles (Lead PM, Data Sources calls for partnering with Data Science on extraction models and fraud ML); no public AI tooling blog found, so only one signal."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "Tech stack shows Salesforce, HubSpot, Zendesk, Segment — no n8n, Zapier, Make, LangChain, LangGraph, or Airflow detected."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "Open roles are Product Manager and Customer Success Manager; no active GRC, Security Engineer, or AI-Governance hire posted."
+      }
+    },
+    "icpScore": 43,
+    "tier": "Disqualify",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "orum.io",
+    "company": "Orum.io (We've joined Stripe)",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Explicitly classified as Financial Services on LinkedIn; builds payment speed/orchestration APIs — core fintech."
+      },
+      "size": {
+        "points": 0,
+        "max": 10,
+        "why": "LinkedIn headcount is 9 active employees today (down 89% over 48 months); company has been absorbed into Stripe and is effectively wound down — far outside the 200–5,000 range."
+      },
+      "compliance": {
+        "points": 5,
+        "max": 20,
+        "why": "Vanta detected in tech stack (trust/compliance platform), but no explicit SOC2 Type I/II or HIPAA certification signal found."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory (Entra) confirmed in tech stack enrichment."
+      },
+      "ai_footprint": {
+        "points": 0,
+        "max": 15,
+        "why": "No AI tooling, AI-related blog posts, or AI job postings detected; zero open roles of any kind."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "Tech stack contains no n8n, Zapier, Make, LangChain, LangGraph, or Airflow signals."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "Open jobs count is 0 — no GRC, Security, or AI-Governance roles posted."
+      }
+    },
+    "icpScore": 35,
+    "tier": "Disqualify",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "himarley.com",
+    "company": "Hi Marley",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "P&C insurtech — explicitly serves insurance carriers with regulated claims workflows, maps directly to insurtech/financial services ICP."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "167 employees as of enrichment — slightly outside the 200-5,000 band, falling in the 100-200 range."
+      },
+      "compliance": {
+        "points": 5,
+        "max": 20,
+        "why": "No SOC2 or HIPAA certification surfaced; however, open JDs repeatedly cite 'regulated carrier environments,' 'audit logging,' 'compliance-sensitive' infra, and 'auditability' as hard requirements — trust-platform-level signal without a confirmed cert."
+      },
+      "idp_sso": {
+        "points": 5,
+        "max": 10,
+        "why": "Principal AI Platform Engineer JD specifies Cognito + IAM + OAuth 2.1 as the identity stack — AWS-native IdP, not Okta or Azure AD/Entra."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Active hiring for Principal AI Platform Engineer and Sr. PM Data & AI, plus product described as 'AI-powered software'; JDs reference AWS Bedrock, MCP, LLM orchestration, and Claude Code in production — both active AI hiring and shipped AI tooling confirmed."
+      },
+      "displacement": {
+        "points": 10,
+        "max": 15,
+        "why": "Sr. DevOps Engineer II JD lists Airflow and dbt as pipeline orchestration tools (strong plus); no explicit n8n/Zapier/Make, but Airflow is a direct workflow-orchestration displacement signal."
+      },
+      "compliance_hiring": {
+        "points": 10,
+        "max": 10,
+        "why": "Active open role for Principal AI Platform Engineer explicitly scoped to build an AI Accountability Registry, Agent Registry, and MCP governance hooks — a live AI-governance hire; Director of Security also started Sep 2025."
+      }
+    },
+    "icpScore": 70,
+    "tier": "B",
+    "email": {
+      "subject": "AI agent governance on AWS",
+      "body": "Saw the Principal AI Platform Engineer posting — the Accountability Registry / Agent Registry design you outlined is exactly the kind of agentic governance problem we built Sim to solve. Sim is an open-source AI workspace where engineering teams deploy and govern agents with full audit trails, scoped permissions, and SSO/SCIM baked in, all running on your own AWS infra so carrier customers never have to ask where their data lives. The self-hosted model means your compliance and IT lead gets the MCP governance hooks and DLP signals natively, without bolting them onto a third-party platform. Would it make sense to do a 25-minute technical walkthrough with whoever is leading the AI Ops build?",
+      "angle": "ai-governance"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "corlytics.com",
+    "company": "Corlytics",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Pure-play RegTech/Financial Services — platform serves 14 of the Top 50 global banks, leading insurers, and SIFIs; squarely fintech/financial services."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "120 employees per LinkedIn — slightly below the 200-employee floor, so falls in the 100–200 'slightly outside' band."
+      },
+      "compliance": {
+        "points": 15,
+        "max": 20,
+        "why": "Azure Active Directory, DMARC Reject, HSTS IncludeSubdomains PreLoad, and GDPR tooling confirmed in stack; product is itself a compliance assurance platform for SIFI-regulated banks — strong SOC2 Type II posture implied, though no explicit badge found."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory (Microsoft Entra) explicitly detected in tech stack."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Tech stack tags 'Artificial Intelligence' and 'AI Agent'; Senior Data Scientist hired April 2025 and Data Scientist hired November 2024 — both active AI hiring and AI tooling signals present."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, LangGraph, or Airflow detected in the tech stack."
+      },
+      "compliance_hiring": {
+        "points": 5,
+        "max": 10,
+        "why": "Information Security Manager joined October 2024 (~8 months ago) — relevant security hire but closed >90 days ago; no active GRC/AI-Governance role in current open jobs."
+      }
+    },
+    "icpScore": 70,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents on your infra",
+      "body": "Your platform processes regulatory intelligence for 40% of the top 30 SIFIs — that's exactly the kind of data that can't leave your environment. We built Sim (sim.ai) as a self-hostable, open-source AI agent workspace so teams like yours can build and run internal AI workflows without routing sensitive regulatory data through third-party clouds. It's SOC2-ready with SSO/SCIM out of the box, and the entire codebase is auditable on GitHub. Worth a 20-minute call with your engineering team to see if it fits?",
+      "angle": "self-host"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "sfox.com",
+    "company": "sFOX",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Crypto prime brokerage/institutional trading platform — squarely fintech/financial services."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "89 employees (LinkedIn size band: 51–200), just below the 200-employee floor; slightly outside ICP range."
+      },
+      "compliance": {
+        "points": 15,
+        "max": 20,
+        "why": "Job posting explicitly states 'SOC 2 certified'; no HIPAA/HITRUST signal found."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory confirmed in tech stack data."
+      },
+      "ai_footprint": {
+        "points": 8,
+        "max": 15,
+        "why": "Tech stack includes 'Artificial Intelligence' and 'AI Generated Copy' signals, but no active AI-specific engineering job postings detected."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, or LangGraph detected in the tech stack."
+      },
+      "compliance_hiring": {
+        "points": 10,
+        "max": 10,
+        "why": "Multiple active compliance hires (Chief Compliance Officer & BSA Officer started 2026-03, two Compliance Analysts onboarded 2026-01/02) — clear active GRC hiring signal."
+      }
+    },
+    "icpScore": 68,
+    "tier": "C",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "cmgx.io",
+    "company": "CMG (Capital Markets Gateway)",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Pure-play capital markets fintech serving 22 global investment banks and 150 asset managers — core financial services ICP."
+      },
+      "size": {
+        "points": 5,
+        "max": 10,
+        "why": "123 employees — slightly outside the 200-5K band, falling in the 100-200 range."
+      },
+      "compliance": {
+        "points": 8,
+        "max": 20,
+        "why": "Dedicated CISO (Josh Wasserman, since 2021), DMARC/HSTS/DocuSign in stack, platform explicitly tracks firm-wide compliance workflows — SOC2 Type I posture inferred, no public Type II badge found."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory and WPO365 confirmed in tech stack — Okta/Azure AD tier."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "OpenAI in tech stack plus a dedicated 'Chief Architect and Head of Innovation and AI' role, and job postings actively direct engineers to prototype with AI."
+      },
+      "displacement": {
+        "points": 15,
+        "max": 15,
+        "why": "Zapier confirmed in the live tech stack scan."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "Open roles are exclusively Platform Engineers and SREs — no active GRC, AI-governance, or security hiring detected."
+      }
+    },
+    "icpScore": 73,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents on your infra",
+      "body": "Noticed CMG runs Zapier alongside a dedicated Head of Innovation and AI — that combo usually means agent workflows are starting to hit the limits of what Zapier can express cleanly. Sim is an open-source AI agent workspace that lets your team build, deploy, and chain agents in code, with the option to self-host on your existing Azure infrastructure so deal data never leaves your environment. Given you're already on Kubernetes + Azure AD, the deployment path is straightforward. Worth a 20-minute call with Tomasz or whoever owns your AI tooling to see if it fits?",
+      "angle": "displacement"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "uplinq.com",
+    "company": "Uplinq",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "LinkedIn industry field is 'Financial Services'; company provides AI-powered bookkeeping/financial management — clear fintech."
+      },
+      "size": {
+        "points": 0,
+        "max": 10,
+        "why": "61 employees confirmed via headcount data — well below the 200-employee floor of the ICP band."
+      },
+      "compliance": {
+        "points": 0,
+        "max": 20,
+        "why": "No SOC2, HIPAA, HITRUST, or trust-platform signals found in tech stack, open jobs, or public description; 'bank-level security' is marketing copy only."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Azure Active Directory confirmed in enriched tech stack, indicating SSO/IdP infrastructure is in place."
+      },
+      "ai_footprint": {
+        "points": 15,
+        "max": 15,
+        "why": "Core product is an AI/ML bookkeeping platform; active DS/ML Software Engineer on staff; OpenAI Conversion Tracking detected in tech stack — both signals present."
+      },
+      "displacement": {
+        "points": 15,
+        "max": 15,
+        "why": "Zapier confirmed in enriched tech stack, signaling active use of a workflow-automation tool Sim can displace."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "Open Jobs enrichment returned zero active listings; no GRC, Security, or AI-Governance roles found."
+      }
+    },
+    "icpScore": 60,
+    "tier": "C",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "complexcaresolutions.com",
+    "company": "ComplexCare Solutions",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "LinkedIn industry = 'Hospitals and Health Care'; core business is health plan member engagement and HIM services handling PHI for Medicare Advantage, Medicaid, and Dual-Eligible populations."
+      },
+      "size": {
+        "points": 10,
+        "max": 10,
+        "why": "706 employees per LinkedIn/Clay enrichment — squarely within the 200–5,000 target band."
+      },
+      "compliance": {
+        "points": 20,
+        "max": 20,
+        "why": "Business is built on HIPAA-regulated PHI: in-home health risk assessments, EHR data extraction, and member data for health plans; CHC-certified Senior Director of Compliance & Privacy (Joyce Bullock, CHC) on staff signals active HIPAA program."
+      },
+      "idp_sso": {
+        "points": 10,
+        "max": 10,
+        "why": "Tech stack confirms Microsoft Azure DNS, Azure Front Door, Azure Traffic Manager, Office 365 Mail, and Microsoft Exchange Online — clear Azure AD/Entra deployment."
+      },
+      "ai_footprint": {
+        "points": 8,
+        "max": 15,
+        "why": "Active 'Senior Data Scientist – Generative AI & Machine Learning' role (Purushotham Kamasani, since 2023) and Databricks + Snowflake in stack signal AI investment; no public AI blog/tooling post detected for the second signal."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "Tech stack contains no n8n, Zapier, Make, LangChain, LangGraph, or Airflow — no workflow-automation displacement signal found."
+      },
+      "compliance_hiring": {
+        "points": 10,
+        "max": 10,
+        "why": "Three active GRC/Security hires: George Tyros (Sr. Manager, Security Program Operations, Nov 2025), Jesse Oscarson (AVP People Operations & Compliance, Jul 2025), and Maria Argimon Farlow (People Technology & Compliance Manager, Oct 2025)."
+      }
+    },
+    "icpScore": 78,
+    "tier": "B",
+    "email": {
+      "subject": "AI agents on your infra",
+      "body": "Saw that ComplexCare brought on a Senior Manager for Security Program Operations and an AVP of Compliance within the last six months — that kind of investment usually means PHI data governance is top of mind across the engineering org too. We built Sim (sim.ai) as a self-hostable, open-source AI agent platform so teams like yours can ship agentic workflows — member engagement automation, HIM coding pipelines, risk-score workflows — without member data ever leaving your own infrastructure. The codebase is fully auditable and the deployment model maps cleanly to HIPAA requirements. Would a 20-minute call with your engineering lead be worth putting on the calendar?",
+      "angle": "self-host"
+    },
+    "error": null,
+    "status": "Done"
+  },
+  {
+    "domain": "paycommerce.com",
+    "company": "PayCommerce",
+    "scores": {
+      "industry": {
+        "points": 20,
+        "max": 20,
+        "why": "Explicitly categorized as 'Financial Services' — B2B cross-border payments platform connecting banks, financial institutions, and corporates globally."
+      },
+      "size": {
+        "points": 0,
+        "max": 10,
+        "why": "LinkedIn lists 51-200 employees but actual employee_count is 23, and no open jobs were found — far below the 200-employee floor of the ICP band."
+      },
+      "compliance": {
+        "points": 5,
+        "max": 20,
+        "why": "No SOC2, HIPAA, or HITRUST signals detected; tech stack shows Trustpilot and Comodo/DigiCert SSL but no trust/compliance platform (Vanta/Drata/SafeBase) confirmed — awarding minimal trust-signal credit only."
+      },
+      "idp_sso": {
+        "points": 0,
+        "max": 10,
+        "why": "No Okta, Azure AD/Entra, or any other IdP detected in the tech stack or open jobs."
+      },
+      "ai_footprint": {
+        "points": 0,
+        "max": 15,
+        "why": "No AI tooling, AI-related blog content, or AI hiring signals found; tech stack is dominated by legacy web tools (WordPress, jQuery, PHP, Apache)."
+      },
+      "displacement": {
+        "points": 0,
+        "max": 15,
+        "why": "No n8n, Zapier, Make, LangChain, LangGraph, or Airflow detected in the tech stack."
+      },
+      "compliance_hiring": {
+        "points": 0,
+        "max": 10,
+        "why": "Zero open jobs posted; no active or recent GRC, Security, or AI-Governance hiring signal found."
+      }
+    },
+    "icpScore": 25,
+    "tier": "Disqualify",
+    "email": null,
+    "error": null,
+    "status": "Done"
+  }
 ]
