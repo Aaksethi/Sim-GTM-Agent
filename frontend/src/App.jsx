@@ -57,6 +57,25 @@ async function enrichOne(domain) {
   }
 }
 
+// Builds the insight-strip sentence dynamically from the top-scoring Tier A accounts.
+function buildInsight(rows) {
+  const aList = rows
+    .filter((r) => r.tier === 'A' || (typeof r.icpScore === 'number' && r.icpScore >= 85))
+    .sort((a, b) => (b.icpScore || 0) - (a.icpScore || 0))
+  if (aList.length === 0) {
+    return {
+      bold: 'No Tier A accounts yet.',
+      muted: ' Keep scoring — the strongest enterprise-compliance fits for Sim surface here with ready-to-send drafts.',
+    }
+  }
+  const names = aList.slice(0, 2).map((r) => `${r.company} (${r.icpScore})`).join(' and ')
+  const s = aList.length > 1 ? 's' : ''
+  return {
+    bold: `${aList.length} account${s} ready to contact today. ${names}`,
+    muted: " match Sim's enterprise compliance ICP most closely — personalized drafts are ready below.",
+  }
+}
+
 export default function App() {
   const [results, setResults] = useState(loadInitial)
   const [running, setRunning] = useState(false)
@@ -79,6 +98,15 @@ export default function App() {
   const scored = results.filter((r) => typeof r.icpScore === 'number')
   const hasScored = scored.length > 0
   const busy = running || runningRows.size > 0
+
+  // Display-only: sort by ICP score descending (unscored sink to the bottom).
+  // State order is untouched — the pipeline still iterates `results` as-is.
+  const sortedResults = [...results].sort((a, b) => {
+    const sa = typeof a.icpScore === 'number' ? a.icpScore : -1
+    const sb = typeof b.icpScore === 'number' ? b.icpScore : -1
+    return sb - sa
+  })
+  const insight = buildInsight(results)
 
   async function rerunRow(domain) {
     if (running || runningRows.has(domain)) return
@@ -144,42 +172,50 @@ export default function App() {
       <div style={styles.container}>
         {/* ── Header ── */}
         <header style={styles.header}>
-          {/* Left: logo + brand text */}
+          {/* Left: logo · divider · two-line brand text */}
           <div style={styles.brand}>
-            <div style={styles.brandTop}>
-              {logoError ? (
-                <span style={styles.logoFallback}>S</span>
-              ) : (
-                <img
-                  src="/sim-logo.png"
-                  alt="Sim"
-                  height={46}
-                  style={{ width: 'auto', display: 'block', flexShrink: 0 }}
-                  onError={() => setLogoError(true)}
-                />
-              )}
-              <div style={styles.brandText}>
-                <div style={styles.brandTagline}>Open-source AI workspace for teams building enterprise agents</div>
-                <div style={styles.brandTrust}>Trusted by 100,000+ developers · SOC2 compliant · 1,000+ integrations</div>
-              </div>
-            </div>
-            <div style={styles.amberRow}>
-              <div style={styles.amberRule} />
-              <div style={styles.contextLine}>Enterprise accounts scored against Sim's ICP · Healthcare &amp; Fintech · run today</div>
+            {logoError ? (
+              <span style={styles.logoFallback}>sim</span>
+            ) : (
+              <img
+                src="/sim-logo.svg"
+                alt="Sim"
+                height={26}
+                style={{ width: 'auto', display: 'block', flexShrink: 0 }}
+                onError={() => setLogoError(true)}
+              />
+            )}
+            <div style={styles.brandDivider} />
+            <div style={styles.brandText}>
+              <div style={styles.brandTagline}>Open-source AI workspace for teams building enterprise agents</div>
+              <div style={styles.brandTrust}>Trusted by 100,000+ developers · SOC2 compliant · 1,000+ integrations</div>
             </div>
           </div>
 
           {/* Right: pills */}
           <div style={styles.pills}>
-            <span style={styles.pill}>{total} accounts</span>
+            <span style={{ ...styles.pill, ...styles.pillGray }}>{total} accounts</span>
             <span style={{ ...styles.pill, ...styles.pillGreen }}>{tierA} Tier A</span>
             <span style={{ ...styles.pill, ...styles.pillAmber }}>{tierB} Tier B</span>
           </div>
         </header>
 
+        {/* ── Insight strip ── */}
+        <div style={styles.insight}>
+          <div style={styles.insightIcon}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
+          </div>
+          <div style={styles.insightText}>
+            <strong style={styles.insightStrong}>{insight.bold}</strong>
+            <span style={styles.insightMuted}>{insight.muted}</span>
+          </div>
+        </div>
+
         {/* ── Controls row ── */}
         <div style={styles.controlsRow}>
-          <span style={styles.controlsCount}>Showing {scored.length} of {total} accounts scored</span>
+          <span style={styles.controlsCount}>Showing {scored.length} of {total} accounts · sorted by ICP score</span>
           <div style={styles.controlsRight}>
             <DownloadButton results={results} />
             {hasScored && (
@@ -191,6 +227,13 @@ export default function App() {
                 ⤓ Save snapshot
               </button>
             )}
+            <button
+              onClick={runPipeline}
+              disabled={busy}
+              style={{ ...styles.rerunAllBtn, opacity: busy ? 0.5 : 1, cursor: busy ? 'not-allowed' : 'pointer' }}
+            >
+              ↻ Re-run all
+            </button>
           </div>
         </div>
 
@@ -205,7 +248,7 @@ export default function App() {
 
         {/* ── Table ── */}
         <ResultsTable
-          results={results}
+          results={sortedResults}
           onRerun={rerunRow}
           runningRows={runningRows}
           currentDomain={currentDomain}
@@ -215,7 +258,7 @@ export default function App() {
         <div style={styles.footer}>
           <div style={styles.footLeft}>
             <span style={styles.footText}>
-              Built by Aakash Sethi · GTM Agent OS · github.com/Aaksethi/gtm-agent-os
+              Built by Aakash Sethi · GTM Agent OS · github.com/Aaksethi/
             </span>
             {hasScored && (
               <button
@@ -243,37 +286,58 @@ const styles = {
   /* Header */
   header: {
     display: 'flex',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
     gap: 16,
-    marginBottom: 18,
+    marginBottom: 16,
     flexWrap: 'wrap',
   },
-  brand: { display: 'flex', flexDirection: 'column', gap: 13 },
-  brandTop: { display: 'flex', alignItems: 'center', gap: 18 },
-  logoFallback: { color: '#10b981', fontWeight: 800, fontSize: 36, lineHeight: 1 },
-  brandText: { display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 4 },
-  brandTagline: { fontSize: 19, fontWeight: 600, color: '#1a1a1a', lineHeight: 1.25, letterSpacing: '-0.015em' },
-  brandTrust: { fontSize: 14, color: '#737373', lineHeight: 1.3 },
-  amberRow: { display: 'flex', alignItems: 'center', gap: 12 },
-  amberRule: { width: 42, height: 2, background: '#f59e0b', borderRadius: 99, flexShrink: 0 },
-  contextLine: { fontSize: 13.5, color: '#a3a3a3' },
+  brand: { display: 'flex', alignItems: 'center' },
+  logoFallback: { color: '#1a1a1a', fontWeight: 700, fontSize: 20, lineHeight: 1 },
+  brandDivider: { width: 1, height: 32, background: '#e5e5e3', flexShrink: 0, marginLeft: 16 },
+  brandText: { display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingLeft: 16 },
+  brandTagline: { fontSize: 15, fontWeight: 500, color: '#1a1a1a', lineHeight: 1.3 },
+  brandTrust: { fontSize: 12, color: '#737373', marginTop: 3, lineHeight: 1.3 },
 
   /* Header pills */
   pills: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   pill: {
     display: 'inline-block',
-    padding: '6px 16px',
+    padding: '5px 14px',
     borderRadius: 99,
-    background: 'var(--panel)',
-    border: '0.5px solid var(--border)',
-    boxShadow: 'var(--shadow)',
-    fontSize: 13,
+    border: '0.5px solid #e5e5e3',
+    fontSize: 12,
     fontWeight: 600,
-    color: 'var(--text)',
   },
-  pillGreen: { color: '#10b981', borderColor: 'rgba(16,185,129,0.3)', background: 'rgba(16,185,129,0.07)' },
-  pillAmber: { color: '#f59e0b', borderColor: 'rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.08)' },
+  pillGray: { background: '#f8f8f7', color: '#737373', borderColor: '#e5e5e3' },
+  pillGreen: { background: '#ecfdf5', color: '#10b981', borderColor: 'rgba(16,185,129,0.25)' },
+  pillAmber: { background: '#fffbeb', color: '#f59e0b', borderColor: 'rgba(245,158,11,0.3)' },
+
+  /* Insight strip */
+  insight: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 14,
+    padding: '13px 16px',
+    border: '0.5px solid #fde68a',
+    borderRadius: 10,
+    background: 'linear-gradient(90deg, #fffbeb 0%, #f8f8f7 100%)',
+    marginBottom: 16,
+  },
+  insightIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    background: '#f59e0b',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+    boxShadow: '0 1px 3px rgba(245,158,11,0.4)',
+  },
+  insightText: { fontSize: 13, lineHeight: 1.5 },
+  insightStrong: { color: '#1a1a1a', fontWeight: 700 },
+  insightMuted: { color: '#737373', fontWeight: 400 },
 
   /* Controls row */
   controlsRow: {
@@ -284,7 +348,7 @@ const styles = {
     marginBottom: 14,
     flexWrap: 'wrap',
   },
-  controlsCount: { fontSize: 13, color: 'var(--muted)' },
+  controlsCount: { fontSize: 12, color: 'var(--muted)' },
   controlsRight: { display: 'flex', alignItems: 'center', gap: 8 },
 
   /* Run status */
@@ -295,9 +359,19 @@ const styles = {
     background: 'rgba(16,185,129,0.10)',
     color: '#047857',
     border: '1px solid rgba(16,185,129,0.45)',
-    borderRadius: 6,
-    padding: '7px 13px',
-    fontSize: 13,
+    borderRadius: 9,
+    padding: '8px 14px',
+    fontSize: 14,
+    fontWeight: 600,
+    fontFamily: 'inherit',
+  },
+  rerunAllBtn: {
+    background: '#fff',
+    color: '#737373',
+    border: '1px solid #e5e5e3',
+    borderRadius: 9,
+    padding: '8px 15px',
+    fontSize: 14,
     fontWeight: 600,
     fontFamily: 'inherit',
   },
@@ -306,8 +380,8 @@ const styles = {
     color: 'var(--muted)',
     border: '0.5px solid var(--border)',
     borderRadius: 6,
-    padding: '7px 12px',
-    fontSize: 13,
+    padding: '6px 11px',
+    fontSize: 12,
     fontWeight: 600,
     fontFamily: 'inherit',
   },

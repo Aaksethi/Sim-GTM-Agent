@@ -32,10 +32,9 @@ body {
 @keyframes fadeInRow { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-/* Row hover: left amber accent + very subtle lift. */
-.datarow:hover { background: #faf9f6; }
-.datarow:hover td:first-child { box-shadow: inset 2px 0 0 var(--accent); }
-.datarow { transition: background 0.1s; border-bottom: 1px solid rgba(0,0,0,0.05); }
+/* Grid row hover: left amber accent + very subtle wash. */
+.gridrow { transition: background 0.1s; border-bottom: 0.5px solid rgba(0,0,0,0.05); }
+.gridrow:hover { background: #faf9f6; box-shadow: inset 2px 0 0 var(--accent); }
 
 .tnum { font-variant-numeric: tabular-nums; }
 .label {
@@ -53,7 +52,7 @@ body {
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   padding: 4px 6px;
   border-radius: 6px;
   line-height: 1;
