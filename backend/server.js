@@ -183,10 +183,20 @@ async function getClayAccessToken() {
   clayAccessToken = tok.access_token;
   clayAccessExpiry = Date.now() + (Number(tok.expires_in) || 3600) * 1000;
 
-  // Rotation: if Clay handed back a new refresh token, adopt it.
+  // Rotation: if Clay handed back a new refresh token, adopt it — and log the
+  // new value loudly so the operator can paste it into Render's
+  // CLAY_REFRESH_TOKEN env var. That keeps the env var fresh, so the NEXT
+  // restart boots cleanly instead of dying with invalid_grant — no browser
+  // re-auth needed. (Render logs are private to your dashboard; treat as secret.)
   if (tok.refresh_token && tok.refresh_token !== clayRefreshToken) {
     clayRefreshToken = tok.refresh_token;
-    console.log("Clay rotated the refresh token; now using the new one (in memory).");
+    console.log(
+      "\n================ CLAY REFRESH TOKEN ROTATED ================\n" +
+        "  To survive the next restart, update this in Render -> Environment:\n" +
+        "  CLAY_REFRESH_TOKEN=" + tok.refresh_token + "\n" +
+        "  (keep it secret - do not commit or share)\n" +
+        "===========================================================\n",
+    );
   }
   console.log(
     `Clay access token refreshed (valid ~${Math.round((clayAccessExpiry - Date.now()) / 60000)} min).`,
@@ -356,7 +366,15 @@ app.post("/enrich", async (req, res) => {
     clayToken = await getClayAccessToken();
   } catch (authErr) {
     console.error("Clay auth error:", authErr.message);
-    return res.status(502).json({ error: authErr.message });
+    // Detect the "connection expired / not set up" family and hand the frontend
+    // a clean, human message + a flag, instead of the raw invalid_grant blob.
+    const needsReauth = /invalid_grant|no longer valid|not configured/i.test(authErr.message);
+    return res.status(502).json({
+      error: needsReauth
+        ? "Clay needs re-authorization — the connection expired. Re-run clay-auth.mjs and update Render, then retry. Existing scores are unaffected."
+        : authErr.message,
+      clayReauth: needsReauth,
+    });
   }
 
   // The request body for the Anthropic Messages API.
