@@ -29,7 +29,14 @@ function tierInfo(tier, score) {
 // Strongest signal = the scored dimension with the highest points/max fraction.
 // We surface its plain-English rationale so the founder sees WHY without clicking.
 function topSignal(r) {
-  if (!r.scores) return r.status === 'Failed' ? 'Scoring failed — re-run to retry' : ''
+  if (!r.scores) {
+    if (r.status === 'Failed') {
+      return /clay needs re-authorization|re-run clay-auth/i.test(r.error || '')
+        ? 'Clay needs re-authorization — reconnect to re-score'
+        : 'Scoring failed — re-run to retry'
+    }
+    return ''
+  }
   let best = null
   for (const c of CATEGORIES) {
     const cell = r.scores[c.key]
